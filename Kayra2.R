@@ -1,5 +1,5 @@
 write.csv(Kerncijfers_wijken_en_buurten_2019_05062025_112613, "data/Kerncijfers_wijken_en_buurten_2019.csv")
-<<<<<<< HEAD
+
 write.csv(Kerncijfers_wijken_en_buurten_2017_10062025_135511,"data/Kerncijfers_wijken_en_buurten_2017.csv")
 #overbodige rijen verwijderen
 huur <- c("index")
