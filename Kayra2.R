@@ -4,24 +4,146 @@ write.csv(Kerncijfers_wijken_en_buurten_2017_10062025_135511,"data/Kerncijfers_w
 #overbodige rijen verwijderen
 huur <- c("index")
 
+Kerncijfers2019_wijken <- Kerncijfers2019 %>% 
+  filter(str_detect('Type regio', "Wijk")) %>% 
+  select('Wijken.en.buurten'
+         ,'Type regio',
+         'Gem. gestandaardiseerd inkomen',
+         '40% laagste inkomen','20% hoogste inkomen',
+         'Inkomen va huishoudens met laag inkomen')
 
-
-#filteren op buurten in Amsterdam-Zuid en west 2019
 install.packages("tidyverse")
 library(tidyr)
 library(dplyr)
 library(tidyverse)
 
+#filteren op buurten in Amsterdam-Zuid en west 2019
+
 Kerncijfers2019 <- Kerncijfers_wijken_en_buurten_2019_05062025_112613
 
-#filter
-Kerncijfers2019 <- Kerncijfers2019 %>% filter(str_detect(Regioaanduiding.Soort.regio..omschrijving., "Wijk"))
-select(Kerncijfers2019,c())
-
 Kerncijfers2019<-rename(Kerncijfers2019, 'Type regio' = 'Regioaanduiding.Soort.regio..omschrijving.')
+Kerncijfers2019<-rename(Kerncijfers2019,'Gem. gestandaardiseerd inkomen'= 'Inkomen.Inkomen.van.huishoudens.Gem..gestandaardiseerd.inkomen.van.huish..x.1.000.euro.')
+Kerncijfers2019<-rename(Kerncijfers2019,'40% laagste inkomen'= 'Inkomen.Inkomen.van.huishoudens.40..huishoudens.met.laagste.inkomen....')
+Kerncijfers2019<-rename(Kerncijfers2019,'20% hoogste inkomen'= 'Inkomen.Inkomen.van.huishoudens.20..huishoudens.met.hoogste.inkomen....')
+Kerncijfers2019<-rename(Kerncijfers2019,'Inkomen van huishoudens met laag inkomen'= 'Inkomen.Inkomen.van.huishoudens.Huishoudens.met.een.laag.inkomen....')
+
+Kerncijfers2019_wijken <- Kerncijfers2019 %>%
+  mutate(`Type regio` = str_trim(`Type regio`)) %>%
+  filter(str_detect(`Type regio`, regex("Wijk", ignore_case = TRUE))) %>%
+  filter(`Wijken.en.buurten` %in% c(
+    # Zuid
+    'Zuidas', 'Oude Pijp', 'Nieuwe Pijp', 'Zuid Pijp', 'Hoofddorppleinbuurt',
+    'Schinkelbuurt', 'Willemspark', 'Museumkwartier', 'Stadionbuurt', 'Apollobuurt',
+    # West
+    'Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+    'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+    'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+    'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+    'Westindische Buurt'
+  )) %>%
+  select(
+    `Wijken.en.buurten`,
+    `Type regio`,
+    `40% laagste inkomen`,
+    `20% hoogste inkomen`,
+    `Inkomen va huishoudens met laag inkomen`
+  ) %>%
+  mutate(
+    Stadsdeel = case_when(
+      `Wijken.en.buurten` %in% c(
+        'Zuidas', 'Oude Pijp', 'Nieuwe Pijp', 'Zuid Pijp', 'Hoofddorppleinbuurt',
+        'Schinkelbuurt', 'Willemspark', 'Museumkwartier', 'Stadionbuurt', 'Apollobuurt'
+      ) ~ "Zuid",
+      `Wijken.en.buurten` %in% c(
+        'Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+        'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+        'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+        'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+        'Westindische Buurt'
+      ) ~ "West"
+    ),
+    `40% laagste inkomen` = as.numeric(str_replace(`40% laagste inkomen`, ",", ".")),
+    `20% hoogste inkomen` = as.numeric(str_replace(`20% hoogste inkomen`, ",", ".")),
+    `Inkomen va huishoudens met laag inkomen` = as.numeric(str_replace(`Inkomen va huishoudens met laag inkomen`, ",", "."))
+  )  %>%
+  group_by(Stadsdeel) %>%
+  summarise(
+    `Gemiddelde 40% laagste inkomen` = mean(`40% laagste inkomen`, na.rm = TRUE),
+    `Gemiddelde 20% hoogste inkomen` = mean(`20% hoogste inkomen`, na.rm = TRUE),
+    `Gemiddeld aandeel huishoudens met laag inkomen` = mean(`Inkomen va huishoudens met laag inkomen`, na.rm = TRUE)
+  )
 
 
-=======
+#filteren op Amsterdam-zuid en west in 2017
+Kerncijfers2017 <- Kerncijfers_wijken_en_buurten_2017_10062025_135511
+
+Kerncijfers2017<-rename(Kerncijfers2017, 'Type regio' = 'Regioaanduiding.Soort.regio..omschrijving.')
+Kerncijfers2017<-rename(Kerncijfers2017,'40% laagste inkomen'= 'Inkomen.Inkomen.van.huishoudens.40..huishoudens.met.laagste.inkomen....')
+Kerncijfers2017<-rename(Kerncijfers2017,'20% hoogste inkomen'= 'Inkomen.Inkomen.van.huishoudens.20..huishoudens.met.hoogste.inkomen....')
+Kerncijfers2017<-rename(Kerncijfers2017,'Inkomen van huishoudens met laag inkomen'= 'Inkomen.Inkomen.van.huishoudens.Huishoudens.met.een.laag.inkomen....')
+
+Kerncijfers2017_wijken <- Kerncijfers2017 %>%
+  mutate(`Type regio` = str_trim(`Type regio`)) %>%
+  filter(str_detect(`Type regio`, regex("Wijk", ignore_case = TRUE))) %>%
+  filter(`Wijken.en.buurten` %in% c(
+    # Zuid
+    'Zuidas', 'Oude Pijp', 'Nieuwe Pijp', 'Zuid Pijp', 'Hoofddorppleinbuurt',
+    'Schinkelbuurt', 'Willemspark', 'Museumkwartier', 'Stadionbuurt', 'Apollobuurt',
+    # West
+    'Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+    'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+    'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+    'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+    'Westindische Buurt'
+  )) %>%
+  select(
+    `Wijken.en.buurten`,
+    `Type regio`,
+    `40% laagste inkomen`,
+    `20% hoogste inkomen`,
+    `Inkomen van huishoudens met laag inkomen`
+  )%>%
+  mutate(
+    Stadsdeel = case_when(
+      `Wijken.en.buurten` %in% c(
+        'Zuidas', 'Oude Pijp', 'Nieuwe Pijp', 'Zuid Pijp', 'Hoofddorppleinbuurt',
+        'Schinkelbuurt', 'Willemspark', 'Museumkwartier', 'Stadionbuurt', 'Apollobuurt'
+      ) ~ "Zuid",
+      `Wijken.en.buurten` %in% c(
+        'Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+        'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+        'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+        'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+        'Westindische Buurt'
+      ) ~ "West"
+    ),
+    `40% laagste inkomen` = as.numeric(str_replace(`40% laagste inkomen`, ",", ".")),
+    `20% hoogste inkomen` = as.numeric(str_replace(`20% hoogste inkomen`, ",", ".")),
+    `Inkomen van huishoudens met laag inkomen` = as.numeric(str_replace(`Inkomen van huishoudens met laag inkomen`, ",", "."))
+  ) %>%
+  group_by(Stadsdeel) %>%
+  summarise(
+    `Gemiddelde 40% laagste inkomen` = mean(`40% laagste inkomen`, na.rm = TRUE),
+    `Gemiddelde 20% hoogste inkomen` = mean(`20% hoogste inkomen`, na.rm = TRUE),
+    `Gemiddeld aandeel huishoudens met laag inkomen` = mean(`Inkomen van huishoudens met laag inkomen`, na.rm = TRUE)
+  )
+
+  
+#filteren op Amsterdam-zuid en west 2015
+Kerncijfers2015 <- Kerncijfers_wijken_en_buurten_2015_10062025_180625
+
+Kerncijfers2015<-rename(Kerncijfers2015, 'Type regio' = 'Regioaanduiding.Soort.regio..omschrijving.')
+Kerncijfers2015<-rename(Kerncijfers2015,'20% hoogste inkomen'= 'Inkomen.Inkomen.van.huishoudens.20..huishoudens.met.hoogste.inkomen....')
+
+
+Kerncijfers2015_wijken <- Kerncijfers2015 %>%
+  mutate(`Type regio` = str_trim(`Type regio`)) %>%  # Trim spaces
+  filter(str_detect(`Type regio`, regex("Wijk", ignore_case = TRUE))) %>%
+  select(
+    `Wijken.en.buurten`,
+    `Type regio`,
+    `20% hoogste inkomen`,
+  )
 
 # 1. Laad de dataset
 huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
