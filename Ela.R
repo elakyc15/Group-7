@@ -23,24 +23,4 @@ print(huur_particulier)
 
 library(tidyverse)
 
-# Stap 2: Filter alleen op E West en K Zuid (particuliere huurprijzen)
-#huur <- huur %>%
-#  filter(V2 %in% c("E West", "K Zuid")) %>%
-#  select(V2, V5, V6)  # V5 = 2017 (particulier), V6 = 2019 (particulier)
 
-# Stap 3: Hernoem kolommen
-#colnames(huur) <- c("stadsdeel", "2017", "2019")
-
-
-# Stap 4: Pivot naar lange vorm
-huur_lang <- huur %>%
-  pivot_longer(cols = c("2017_p", "2019_p"),
-               names_to="jaar",
-               values_to = "huurprijs")
-
-# Stap 5: Controleer resultaat
-print(huur_lang)
-
-
-
-huur_particulier$jaar <- 0
