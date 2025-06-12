@@ -374,6 +374,28 @@ combined <- incomes_all %>%
 # Inspect final result
 print(combined)
 
+# creating extra variables 
+library(dplyr)
+
+# assume `combined` has: Stadsdeel, Jaar, Gem20_high, Huurprijs
+
+combined2 <- combined %>%
+  # 1) rent-quota
+  mutate(
+    RentQuota    = (Huurprijs / Gem20_high) * 100
+  ) %>%
+  # 2) for %-​changes we need to sort and lag by year within each stadsdeel
+  arrange(Stadsdeel, Jaar) %>%
+  group_by(Stadsdeel) %>%
+  mutate(
+    rent_pct     = (Huurprijs / lag(Huurprijs) - 1) * 100,
+    inc_pct      = (Gem20_high / lag(Gem20_high) - 1) * 100,
+    # 3) affordability pressure
+    AffordPressure = rent_pct - inc_pct
+  ) %>%
+  ungroup()
+
+print(combined2)
 
 
 
