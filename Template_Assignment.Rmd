@@ -1,6 +1,6 @@
 ---
-title: "Template"
-author: "Studentnames and studentnumbers here"
+title: "The Impact of Rent Increases on Different Income Groups in Amsterdam-West and Amsterdam-South (2017 vs. 2019)"
+author: "Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -29,11 +29,13 @@ Use APA referencing throughout your document. [Here's a link to some explanation
 
 ## 1.1 Describe the Social Problem
 
-Include the following:
+**Social problem: *The Impact of Rent Increases on Different Income Groups in Amsterdam West vs Amsterdam South (2017 vs 2019)***
 
--   Why is this relevant?
+In the last few years, rent prices in the Netherlands have increased significantly, especially in cities like Amsterdam. Within Amsterdam, neighbourhoods such as Amsterdam West and Amsterdam South have seen noticeable differences in how rising rents affect residents. This has made it increasingly difficult for people with low or average incomes to find affordable housing (Eichholtz, 2022).
 
--   ...
+While some people's incomes have not increased much, rents continue to rise. This means a larger portion of their income goes to rent, leaving less for essential needs like food, healthcare, or education (Custers, 2022).
+
+This is a serious issue because everyone needs a safe and affordable place to live. If rent prices keep rising, some residents may be forced to move to less desirable areas, live in smaller or lower-quality homes, or even face homelessness.By examining rent prices from 2017 to 2019 and comparing the impact on different income groups in Amsterdam West and Amsterdam South, we can gain a better understanding of who is most affected. This insight is crucial for creating more effective and fair housing policies in the future.
 
 # Part 2 - Data Sourcing
 
@@ -42,7 +44,9 @@ Include the following:
 Preferably from a URL, but if not, make sure to download the data and store it in a shared location that you can load the data in from. Do not store the data in a folder you include in the Github repository!
 
 ```{r loading_data}
-dataset <- midwest
+dataset <- read_csv("data/huurprijzen.csv")
+dataset_2<- read_csv("data/kerncijfers_wijken_en_buurten_2019.csv")
+dataset_3<- read_csv("data/kerncijfers_wijken_en_buurten_2017.csv")
 ```
 
 midwest is an example dataset included in the tidyverse package
@@ -53,7 +57,7 @@ midwest is an example dataset included in the tidyverse package
 head(dataset)
 ```
 
-In this case we see 28 variables, but we miss some information on what units they are in. We also don't know anything about the year/moment in which this data has been captured.
+The first dataset is an Excel sheet with the rent prices of every district of Amsterdam over the years 2013, 2015, 2017, 2019 both from particular and corporate. The second dataset is a csv file with all the neighborhoods of Amsterdam with all types of different variables, such as the population per neighborhood, types of houses, incomes and incomes of different groups, etc.
 
 ``` r
 inline_code = TRUE
@@ -63,13 +67,31 @@ These are things that are usually included in the metadata of the dataset. For y
 
 ## 2.3 Describe the type of variables included
 
-Think of things like:
+***Income-related variables:***
 
--   Do the variables contain health information or SES information?
+· Proportion of households in the lowest 40% income bracket: Allows comparison of lower-income households to other income groups.
 
--   Have they been measured by interviewing individuals or is the data coming from administrative sources?
+·Share of households in the top 20% income bracket: Enables analysis of higher-income segments in relation to the rest.
 
-*For the sake of this example, I will continue with the assignment...*
+·EU-defined low-income indicator: Focuses on households that are likely to struggle financially, offering a more concrete view of financial vulnerability.
+
+These income data are not self-reported but derived from administrative sources. Statistics Netherlands (CBS) compiles income information using tax returns and government administrative records (e.g., benefits and allowances), calculating the disposable income per household. Each household’s income is linked to their residential address to allow geographic comparison at the district level (Centraal Bureau voor de Statistiek, 2025.
+
+***Housing-related variables:***
+
+· Average rent prices, specified for two contrasting districts in Amsterdam: Amsterdam-West (relatively affordable) and Amsterdam-Zuid (relatively expensive).
+
+Data originate from the Basisbestand Gebieden Amsterdam (BBGA), which is based on administrative municipal records (e.g., WOZ values, rental data) (Gemeente Amsterdam,2023). Additional housing data were drawn from WiMRA, a survey-based source covering household characteristics, preferences, and mobility in the Amsterdam metropolitan region (*Dataset: Woningmarkt, 2025).*
+
+***Constructed variables:***
+
+Rent quota: Calculated as (average rent / average income) × 100%, this variable expresses the burden of rent in relation to income.
+
+Affordability pressure: Calculated as (rent increase % – income growth %). A positive value indicates that rent is growing faster than income, signaling worsening affordability.
+
+The selected datasets provide a balanced combination of objective and subjective information, allowing for a nuanced analysis of both economic affordability and perceived housing conditions. Using Amsterdam-West and Amsterdam-Zuid as contrasting districts supports a clear comparison between relatively affordable and expensive housing areas.
+
+While these data sources offer valuable insights, they also come with certain limitations. One key issue is timeliness, as administrative records may be subject to delays in reporting, which can reduce their relevance in a fast-evolving housing market. Moreover, the survey data's representativeness can be affected by non-response bias or insufficient coverage of specific demographic groups, despite the extensive scope of WiMRA. The level of detail is another constraint since the data is presented at an aggregated district or neighbourhood level, potentially overlooking important variations at smaller geographic scales, such as individual streets or blocks. Lastly, the derived indicators, such as rent quota and affordability pressure, are based on averages, which may mask the wide range of experiences and disparities among different households.
 
 # Part 3 - Quantifying
 
@@ -155,4 +177,18 @@ Provide the link to your PUBLIC repository here: ...
 
 ## 5.2 Reference list
 
-Use APA referencing throughout your document.
+Custers, G. (2022). De wooncrisis in Nederland: voorbij het idee van ‘natuurverschijnsel’. *Tijdschrift Sociologie*, *3*(0). <https://doi.org/10.38139/ts.2022.27>
+
+Eichholtz, M. K. M. F. P. (2022, 10 december). *Dure huizen maar geen zeepbel in Amsterdam*. ESB. <https://esb.nu/dure-huizen-maar-geen-zeepbel-in-amsterdam/>
+
+Centraal Bureau voor de Statistiek. (2025). *Kerncijfers wijken en buurten 2022* [Data set]. Retrieved June 4, 2025, from <https://opendata.cbs.nl/statline/#/CBS/nl/dataset/85318NED/table?ts=1749040045409> ([opendata.cbs.nl](https://opendata.cbs.nl/?utm_source=chatgpt.com))
+
+<https://opendata.cbs.nl/statline/#/CBS/nl/dataset/84583NED/table?ts=1749115541907>
+
+*Dataset: Woningmarkt \| Website onderzoek en statistiek*. (z.d.).
+
+[[https://onderzoek.amsterdam.nl/dataset/woningmarkt-amsterdam]{.underline}](https://onderzoek.amsterdam.nl/dataset/woningmarkt-amsterdam)
+
+*Wonen in de Metropoolregio Amsterdam (WiMRA) 2021 - metropoolregioamsterdam*. (2022, 24 maart). Metropoolregioamsterdam. <https://www.metropoolregioamsterdam.nl/wimra-2021/>
+
+*Dataset: Basisbestand Gebieden Amsterdam (BBGA) \| Website Onderzoek en Statistiek*. (n.d.). <https://onderzoek.amsterdam.nl/dataset/basisbestand-gebieden-amsterdam-bbga>
