@@ -1,4 +1,4 @@
-install.packages("stringr")
+#install.packages("stringr")
 library(dplyr)
 library(stringr)
 
@@ -57,3 +57,5 @@ avg_west_2015 <- data_west_2015 %>%
 inkomen_2015 <- bind_rows(avg_zuid_2015, avg_west_2015)
 
 inkomen_2015$jaar <- 2015
+
+write_csv(inkomen_2015, "data/inkomen_2015.csv")
