@@ -12,7 +12,7 @@ inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 merged_df <- inkomen %>%
   left_join(huur_long, by = c("stadsdeel", "jaar"))
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
-merged_df$huur_quota <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
+merged_df$rent_burden <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
 
 
 data_with_growth <- merged_df %>%
@@ -23,6 +23,8 @@ data_with_growth <- merged_df %>%
     groei_huurprijs = (huurprijs - lag(huurprijs)) / lag(huurprijs) * 100
   )
 data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - data_with_growth$groei_inkomen)
+
+
 
 amsterdam_map <- st_read("data/adam.geojson")
 

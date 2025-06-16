@@ -70,3 +70,4 @@ ggplot(huur_long, aes(x = jaar, y = huurprijs, color = stadsdeel)) +
        color = "Stadsdeel") +
   theme_minimal()
 
+write_csv(huur_long, "data/huurprijzen_per_stadsdeel.csv")
