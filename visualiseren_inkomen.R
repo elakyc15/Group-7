@@ -24,6 +24,12 @@ data_with_growth <- merged_df %>%
   )
 data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - data_with_growth$groei_inkomen)
 
+merged_rent_burden <- bind_rows(rent_burden_2017, rent_burden_2019)
+rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
+rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
+
+merged_rent_burden <- bind_rows(rent_burden_2017, rent_burden_2019) %>%
+  arrange(jaar)
 
 
 amsterdam_map <- st_read("data/adam.geojson")
