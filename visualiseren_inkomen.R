@@ -5,7 +5,7 @@
 library(sf)
 library(dplyr)
 library(ggplot2)
-
+inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
 
