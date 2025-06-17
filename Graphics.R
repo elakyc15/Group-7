@@ -102,3 +102,20 @@ ggplot(map_data_2019) +
     plot.title = element_text(face = "bold", size = 16),
     legend.position = "right"
   )
+
+
+# --- multi line plot rent burden ---
+library(ggplot2)
+
+# Assuming your dataset is called df_merged or merged_rent_burden
+ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  labs(
+    title = "Rent Burden in West and Zuid (2015–2019)",
+    x = "Year",
+    y = "Rent Burden (%)",
+    color = "Stadsdeel"
+  ) +
+  theme_minimal()
