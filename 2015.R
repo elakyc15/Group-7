@@ -59,4 +59,9 @@ inkomen_2015 <- bind_rows(avg_zuid_2015, avg_west_2015)
 inkomen_2015$jaar <- 2015
 
 write_csv(inkomen_2015, "data/inkomen_2015.csv")
-write_csv(avg_west_2015, "avg_west_2015.csv")
+write_csv(avg_west_2015, "data/avg_west_2015.csv")
+write_csv(avg_zuid_2015, "data/avg_zuid_2015.csv")
+write_csv(data_west_2015, "data/data_west_2015.csv")
+write_csv(data_zuid_2015, "data/data_zuid_2015.csv")
+
+

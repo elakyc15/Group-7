@@ -1,26 +1,18 @@
-#write.csv(Kerncijfers_wijken_en_buurten_2019_05062025_112613, "data/Kerncijfers_wijken_en_buurten_2019.csv")
-
-# 1. Laad de dataset
+library(dplyr)
 huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
 
-# 2. Verwijder overbodige rijen (zoals NA-rijen en voetnoten)
 huur <- huur[huur$V2 %in% c("E West", "K Zuid"), ]
 
-# 3. Hernoem kolommen voor duidelijkheid (je kunt dit aanpassen indien nodig)
 colnames(huur) <- c("Index", "stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p", 
                     "2013_c", "2015_c", "2017_c", "2019_c")
 
-# 4. Selecteer alleen particuliere huurprijzen (kolommen eindigend op "_p")
 huur_particulier <- huur[, c("stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p")]
-
-library(dplyr)
 
 huur_particulier <- huur_particulier %>%
   mutate(stadsdeel = recode(stadsdeel, "E West" = "West", "K Zuid" = "Zuid"))
 
 colnames(huur_particulier) <- sub("_p", "", colnames(huur_particulier)) 
 
-# 5. Print resultaat
 print(huur_particulier)
 
 
