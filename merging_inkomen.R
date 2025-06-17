@@ -54,22 +54,21 @@ ggplot(data = map_data) +
   labs(title = "Gemiddeld Inkomen per Wijk in Amsterdam Zuid en West",
        fill = "Gem. Inkomen")
 
-
 #multi line plot rent burden
-library(ggplot2)
+#library(ggplot2)
 
 # Assuming your dataset is called df_merged or merged_rent_burden
-ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2) +
-  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
-  labs(
-    title = "Rent Burden in West and Zuid (2015–2019)",
-    x = "Year",
-    y = "Rent Burden (%)",
-    color = "Stadsdeel"
-  ) +
-  theme_minimal()
+#ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
+  #geom_line(linewidth = 1.2) +
+  #geom_point(size = 2) +
+  #scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  #labs(
+    #title = "Rent Burden in West and Zuid (2015–2019)",
+    #x = "Year",
+    #y = "Rent Burden (%)",
+    #color = "Stadsdeel"
+  #) +
+  #theme_minimal()
 
 
 
