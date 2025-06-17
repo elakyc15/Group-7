@@ -119,3 +119,30 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
     color = "Stadsdeel"
   ) +
   theme_minimal()
+
+
+library(ggplot2)
+library(dplyr)
+
+# Normalize affordability_pressure to 2015 = 100 for each stadsdeel
+baseline <- data_with_growth %>%
+  filter(jaar == 2015) %>%
+  select(stadsdeel, baseline = affordability_pressure)
+
+plot_data <- data_with_growth %>%
+  left_join(baseline, by = "stadsdeel") %>%
+  mutate(affordability_index = (affordability_pressure / baseline) * 100)
+
+# Create the plot
+ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 2019, linetype = "dashed", color = "black") +
+  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  labs(
+    title = "Affordability Pressure (Base Year: 2015 = 100)",
+    x = "Year",
+    y = "Affordability Index (2015 = 100)",
+    color = "Stadsdeel"
+  ) +
+  theme_minimal()
