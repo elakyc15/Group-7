@@ -105,6 +105,7 @@ ggplot(map_data_2019) +
 
 
 # --- multi line plot rent burden ---
+
 library(ggplot2)
 
 # Assuming your dataset is called df_merged or merged_rent_burden
@@ -120,35 +121,49 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   ) +
   theme_minimal()
 
-library(ggplot2)
 library(dplyr)
+library(ggplot2)
 
-# 1. Haal baseline per stadsdeel uit 2015
-baseline <- data_with_growth %>%
-  filter(jaar == 2015) %>%
-  select(stadsdeel, baseline = affordability_pressure)
+base_2015 <- data.frame(
+  stadsdeel = c("West", "Zuid"),
+  jaar = 2015,
+  affordability_index = 100
+)
 
-# 2. Voeg baseline toe en bereken index (alleen waar affordability_pressure beschikbaar is)
-plot_data <- data_with_growth %>%
-  left_join(baseline, by = "stadsdeel") %>%
+growth_data <- data_with_growth %>%
+  filter(jaar %in% c(2017, 2019)) %>%
+  group_by(stadsdeel) %>%
   mutate(
-    affordability_index = ifelse(
-      !is.na(affordability_pressure),
-      (affordability_pressure / baseline) * 100,
-      NA_real_
-    )
-  )
+    affordability_index = 100 + affordability_pressure
+  ) %>%
+  select(stadsdeel, jaar, affordability_index)
 
-# 3. Plot (zonder data filteren)
-ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel, group = stadsdeel)) +
-  geom_line(linewidth = 1.2, na.rm = TRUE) +
-  geom_point(size = 2, na.rm = TRUE) +
+plot_data <- bind_rows(base_2015, growth_data) %>%
+  arrange(stadsdeel, jaar)
+
+ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel)) +
+  geom_line(linewidth = 1.3) +
+  geom_point(size = 3) +
   geom_vline(xintercept = 2018, linetype = "dashed", color = "black") +
+  annotate("text", 
+           x = 2018, 
+           y = max(plot_data$affordability_index, na.rm = TRUE) * 0.98,  # just a little lower
+           label = "Airbnb Cap", 
+           angle = 90, 
+           vjust = -0.5, 
+           hjust = 1, 
+           size = 4, 
+           color = "black") +
   scale_x_continuous(breaks = c(2015, 2017, 2019)) +
   labs(
-    title = "Affordability Pressure (Base Year: 2015 = 100)",
-    x = "Jaar",
-    y = "Affordability Index (2015 = 100)",
+    title = "Affordability Pressure Index (2015 = 100)",
+    x = "Year",
+    y = "Affordability Index",
     color = "Stadsdeel"
   ) +
-  theme_minimal()
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    legend.position = "top"
+  )
+

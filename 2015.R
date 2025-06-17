@@ -1,6 +1,7 @@
 #install.packages("stringr")
 library(dplyr)
 library(stringr)
+library(readr)
 
 headers <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 3, nrows = 2, sep = ";", header = FALSE)
 
