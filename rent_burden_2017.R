@@ -30,4 +30,4 @@ huur_long$stadsdeel
 rent_burden_2017 <- rent_burden_2017 %>% full_join(huur_long, by = "stadsdeel")
 
 rent_burden_2017 <- rent_burden_2017 %>% mutate(Rent_burden = huurprijs / gem_inkomen_per_maand * 100)
-write_csv()
+write_csv(rent_burden_2017, "data/rent_burden_2017.csv")

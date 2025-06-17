@@ -24,12 +24,15 @@ data_with_growth <- merged_df %>%
   )
 data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - data_with_growth$groei_inkomen)
 
-merged_rent_burden <- bind_rows(rent_burden_2017, rent_burden_2019)
+#merge rentburden 2015, 2017, 2019
+merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019)
+rent_burden_2015 <- rent_burden_2015 %>% mutate(jaar = 2015)
 rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
 rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
 
-merged_rent_burden <- bind_rows(rent_burden_2017, rent_burden_2019) %>%
+merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019) %>%
   arrange(jaar)
+
 
 
 amsterdam_map <- st_read("data/adam.geojson")
@@ -52,3 +55,30 @@ ggplot(data = map_data) +
        fill = "Gem. Inkomen")
 
 
+#multi line plot rent burden
+library(ggplot2)
+
+# Assuming your dataset is called df_merged or merged_rent_burden
+ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  labs(
+    title = "Rent Burden in West and Zuid (2015–2019)",
+    x = "Year",
+    y = "Rent Burden (%)",
+    color = "Stadsdeel"
+  ) +
+  theme_minimal()
+
+
+
+
+write_csv(avg_west, "data/avg_west.csv")
+write_csv(avg_zuid, "data/avg_zuid.csv")
+write_csv(combined_df, "data/combined_df.csv")
+write_csv(data_west, "data/data_west.csv")
+write_csv(data_zuid, "data/data_zuid.csv")
+write_csv(data_with_growth, "data_with_growtht.csv")
+write_csv(inkomen, "inkomen.csv")
+write_csv(merged_rent_burden, "merged_rent_burden.csv")
