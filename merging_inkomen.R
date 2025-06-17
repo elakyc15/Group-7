@@ -54,6 +54,7 @@ ggplot(data = map_data) +
   labs(title = "Gemiddeld Inkomen per Wijk in Amsterdam Zuid en West",
        fill = "Gem. Inkomen")
 
+
 #multi line plot rent burden
 library(ggplot2)
 

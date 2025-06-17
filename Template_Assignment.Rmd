@@ -45,8 +45,9 @@ Preferably from a URL, but if not, make sure to download the data and store it i
 
 ```{r loading_data}
 dataset <- read_csv("data/huurprijzen.csv")
-dataset_2<- read_csv("data/kerncijfers_wijken_en_buurten_2019.csv")
+dataset_2<- read_csv("data/kerncijfers_wijken_en_buurten_2015.csv")
 dataset_3<- read_csv("data/kerncijfers_wijken_en_buurten_2017.csv")
+dataset_4<- read_csv("data/kerncijfers_wijken_en_buurten_2019.csv")
 ```
 
 midwest is an example dataset included in the tidyverse package
@@ -99,8 +100,93 @@ While these data sources offer valuable insights, they also come with certain li
 
 Say we want to include only larger distances (above 2) in our dataset, we can filter for this.
 
-```{r data_cleaning}
-mean(dataset$percollege)
+```{r data cleaning huurprijzen}
+library(dplyr)
+huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
+
+huur <- huur[huur$V2 %in% c("E West", "K Zuid"), ]
+
+colnames(huur) <- c("Index", "stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p", 
+                    "2013_c", "2015_c", "2017_c", "2019_c")
+
+huur_particulier <- huur[, c("stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p")]
+
+huur_particulier <- huur_particulier %>%
+  mutate(stadsdeel = recode(stadsdeel, "E West" = "West", "K Zuid" = "Zuid"))
+
+colnames(huur_particulier) <- sub("_p", "", colnames(huur_particulier)) 
+
+print(huur_particulier)
+
+#Zet alle kolommen behalve 'stadsdeel' om naar numeric
+huur_particulier[, -1] <- lapply(huur_particulier[, -1], as.numeric)
+
+#Zet data in lange vorm
+huur_long <- pivot_longer(huur_particulier, 
+                          cols = -stadsdeel, 
+                          names_to = "jaar", 
+                          values_to = "huurprijs")
+```
+
+```{r data cleaning income 2015}
+library(dplyr)
+library(stringr)
+
+headers <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 3, nrows = 2, sep = ";", header = FALSE)
+
+new_headers <- paste(headers[1, ], headers[2, ], sep = "")  # Customize the separator as needed
+new_headers <- str_replace_all(new_headers, "\\s+",".")
+
+data <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 5, sep = ";", header = FALSE)
+
+colnames(data) <- new_headers
+
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+data_zuid_2015 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_zuid)
+
+data_zuid_2015 <- data_zuid_2015 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
+  )
+
+data_west_2015 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_west)
+
+data_west_2015 <- data_west_2015 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
+  )
+
+data_zuid_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_zuid_2015$gem_inkomen))
+data_west_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_west_2015$gem_inkomen))
+
+avg_zuid_2015 <- data_zuid_2015 %>%
+  summarise(
+    stadsdeel = "Zuid",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+avg_west_2015 <- data_west_2015 %>%
+  summarise(
+    stadsdeel = "West",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+inkomen_2015 <- bind_rows(avg_zuid_2015, avg_west_2015)
+
+inkomen_2015$jaar <- 2015
 ```
 
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
