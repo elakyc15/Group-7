@@ -1,32 +1,52 @@
+# --- Boxplot of Rent Burden per Neighbourhood (Wijk) for 2017 and 2019 ---
+
 library(ggplot2)
 library(dplyr)
 
-# Combine 2017 and 2019 data with year column
+# Add year column to each dataset
 rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
 rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
 
+# Combine data from both years and remove incomplete entries
 rent_burden_clean <- bind_rows(rent_burden_2017, rent_burden_2019) %>%
   filter(!is.na(Rent_burden), !is.na(stadsdeel), !is.na(wijk))
 
+# Create the boxplot
 ggplot(rent_burden_clean, aes(x = reorder(wijk, Rent_burden), y = Rent_burden, fill = stadsdeel)) +
-  geom_boxplot(outlier.shape = NA, alpha = 0.8, width = 0.6) +  # thinner boxes to spread horizontally
+  
+  # Draw boxplots without outliers and semi-transparent fill
+  geom_boxplot(outlier.shape = NA, alpha = 0.8, width = 0.6) +
+  
+  # Add jittered points to show individual data by year
   geom_jitter(aes(color = factor(jaar)), width = 0.2, size = 2, alpha = 0.7) +
+  
+  # Manually set colors for districts (stadsdelen)
   scale_fill_manual(values = c("Zuid" = "#1f78b4", "West" = "#33a02c")) +
+  
+  # Manually set colors for years
   scale_color_manual(values = c("2017" = "#e41a1c", "2019" = "#377eb8")) +
+  
+  # Labels and title
   labs(
-    title = "Rent Burden per Neighbourhood (2017 & 2019)",
+    title = "Rent Burden Distribution Across Neighbourhoods in West and Zuid (2017 & 2019)",
     x = "Neighbourhood (Wijk)",
     y = "Rent Burden (% of income spent on rent)",
     fill = "Stadsdeel",
     color = "Year"
   ) +
+  
+  # Apply a clean minimal theme
   theme_minimal(base_size = 14) +
+  
+  # Improve x-axis text readability and title style
   theme(
-    axis.text.x = element_text(size = 12, angle = 45, hjust = 1),  # improve x labels readability
+    axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
     plot.title = element_text(face = "bold"),
     legend.position = "top"
   ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))  # add vertical space above boxes to make them appear taller
+  
+  # Add space above boxplots to avoid clipping
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
 
 library(dplyr)
 library(ggplot2)
@@ -104,22 +124,34 @@ ggplot(map_data_2019) +
   )
 
 
-# --- multi line plot rent burden ---
+# --- Multi-line plot of Rent Burden over time for West and Zuid ---
 
 library(ggplot2)
 
-# Assuming your dataset is called df_merged or merged_rent_burden
+# Create a line plot showing the rent burden across years for each stadsdeel (district)
 ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
+  
+  # Add lines to connect rent burden values over time for each district
   geom_line(linewidth = 1.2) +
+  
+  # Add points at each data value for better visibility
   geom_point(size = 2) +
+  
+  # Set specific breaks on the x-axis (only the measured years)
   scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  
+  # Add plot labels and title
   labs(
-    title = "Rent Burden in West and Zuid (2015–2019)",
-    x = "Year",
-    y = "Rent Burden (%)",
-    color = "Stadsdeel"
+    title = "Rent Burden in West and Zuid (2015–2019)",  
+    x = "Year",                                           
+    y = "Rent Burden (%)",                                
+    color = "Stadsdeel"                                   
   ) +
+  
+  # Apply a minimal theme for a clean appearance
   theme_minimal()
+
+
 
 library(dplyr)
 library(ggplot2)
