@@ -613,6 +613,8 @@ data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - d
 
 ## 3.3 Visualize temporal variation
 
+How has rent burden evolved from 2017 to 2019 in West vs. Zuid?
+
 ```{r Multi-line plot of Rent Burden over time for West and Zuid}
 
 library(ggplot2)
@@ -641,7 +643,11 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   theme_minimal()
 ```
 
+We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two colored lines one for West and one for Zuid so you can see how rent burden evolved over **time** between 2017 and 2019. By placing time on the horizontal axis and clearly labeling each district, the chart directly aligns with our question about temporal variation in affordability stress, revealing exactly when and by how much Zuid’s rent burden outpaced West’s.
+
 ## 3.4 Visualize spatial variation
+
+How does rent burden vary across neighbourhoods in Amsterdam West vs. Zuid?
 
 ```{r Choropleth Maps: Rent Burden by Neighbourhood 2017}
 library(dplyr)
@@ -734,11 +740,11 @@ ggplot(map_data_2019) +
   )
 ```
 
-Here you provide a description of why the plot above is relevant to your specific social problem.
+We’ll use the official Amsterdam neighbourhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighbourhoods that need the most support.
 
 ## 3.5 Visualize sub-population variation
 
-What is the poverty rate by state?
+Which neighbourhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
 
 ```{r Boxplot of Rent Burden per Neighbourhood (Wijk) for 2017 and 2019}
 
@@ -791,11 +797,11 @@ ggplot(rent_burden_clean, aes(x = reorder(wijk, Rent_burden), y = Rent_burden, f
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
 ```
 
-Here you provide a description of why the plot above is relevant to your specific social problem.
+We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, grouping boxes by neighbourhood and coloring them by borough (West vs Zuid), then facet the entire plot into two panels one for West, one for Zuid. This setup treats each borough as a sub-population, so you can directly compare how rent burden distributions (medians, IQRs, and upper tails) differ across neighbourhoods and between boroughs. A concise caption will explain that taller boxes and longer upper whiskers signal where affordability stress is most severe, tying the visualization back to our question about which neighbourhoods and which sub-populations carry the heaviest rent burden.
 
 ## 3.6 Event analysis
 
-Analyze the relationship between two variables.
+What happened to rent burden growth when Airbnb caps came in (2018 and 2019)?
 
 ```{r Line Plot of Affordability Pressure Index (2015 = 100) with Airbnb Cap Annotation}
 library(dplyr)
@@ -864,7 +870,7 @@ ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel)) +
   )
 ```
 
-Here you provide a description of why the plot above is relevant to your specific social problem.
+We’ll plot a timeline of the year-over-year percent change in rent burden (y-axis) across survey years and mark the two key events mid-2018 and January 2019 Airbnb cap implementations with vertical lines and labels. By placing those events directly on the same chart as the percent-change values, we can see if the slope of the line flattens or dips immediately afterward. If the growth rate in rent burden noticeably slows following the caps, it suggests those regulations had a tangible impact on easing affordability pressure demonstrating how policy can shift housing-cost dynamics over time.
 
 # Part 4 - Discussion
 
