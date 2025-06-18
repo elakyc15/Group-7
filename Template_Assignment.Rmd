@@ -101,27 +101,33 @@ While these data sources offer valuable insights, they also come with certain li
 Say we want to include only larger distances (above 2) in our dataset, we can filter for this.
 
 ```{r data cleaning huurprijzen}
+# Load required package
 library(dplyr)
+
+# Load rental price data, skipping the first row which likely contains metadata
 huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
 
+# Keep only rows for West (E West) and Zuid (K Zuid)
 huur <- huur[huur$V2 %in% c("E West", "K Zuid"), ]
 
+# Rename columns for clarity
 colnames(huur) <- c("Index", "stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p", 
                     "2013_c", "2015_c", "2017_c", "2019_c")
 
+# Select only private sector rent columns and district names
 huur_particulier <- huur[, c("stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p")]
 
+# Recode district names to simplified labels
 huur_particulier <- huur_particulier %>%
   mutate(stadsdeel = recode(stadsdeel, "E West" = "West", "K Zuid" = "Zuid"))
 
+# Remove '_p' suffix from column names
 colnames(huur_particulier) <- sub("_p", "", colnames(huur_particulier)) 
 
-print(huur_particulier)
-
-#Zet alle kolommen behalve 'stadsdeel' om naar numeric
+# Convert year columns to numeric
 huur_particulier[, -1] <- lapply(huur_particulier[, -1], as.numeric)
 
-#Zet data in lange vorm
+# Reshape data to long format: one row per district-year with rental price
 huur_long <- pivot_longer(huur_particulier, 
                           cols = -stadsdeel, 
                           names_to = "jaar", 
@@ -129,18 +135,258 @@ huur_long <- pivot_longer(huur_particulier,
 ```
 
 ```{r data cleaning income 2015}
+# Load necessary libraries for data manipulation and string processing
 library(dplyr)
 library(stringr)
+library(readr)
 
+# Read the first two rows after skipping 3 to create multi-line headers
 headers <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 3, nrows = 2, sep = ";", header = FALSE)
 
-new_headers <- paste(headers[1, ], headers[2, ], sep = "")  # Customize the separator as needed
-new_headers <- str_replace_all(new_headers, "\\s+",".")
+# Combine the two header rows into single strings per column
+new_headers <- paste(headers[1, ], headers[2, ], sep = "")  # Join headers with no space (can be customized)
 
+# Replace whitespace with dots to standardize column names
+new_headers <- str_replace_all(new_headers, "\\s+", ".")
+
+# Read the actual data starting from the 6th row (skip metadata rows)
 data <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 5, sep = ";", header = FALSE)
 
+# Apply the newly created header names to the dataset
 colnames(data) <- new_headers
 
+# Define the neighborhoods (wijken) within the Zuid district
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+
+# Define the neighborhoods within the West district
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+# Filter data to include only neighborhoods from Zuid
+data_zuid_2015 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_zuid)
+
+# Select relevant columns and rename them for Zuid
+data_zuid_2015 <- data_zuid_2015 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
+  )
+
+# Filter data to include only neighborhoods from West
+data_west_2015 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_west)
+
+# Select relevant columns and rename them for West
+data_west_2015 <- data_west_2015 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
+  )
+
+# Convert income values from string (with comma) to numeric for Zuid
+data_zuid_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_zuid_2015$gem_inkomen))
+
+# Convert income values from string (with comma) to numeric for West
+data_west_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_west_2015$gem_inkomen))
+
+# Calculate the average income for Zuid
+avg_zuid_2015 <- data_zuid_2015 %>%
+  summarise(
+    stadsdeel = "Zuid",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Calculate the average income for West
+avg_west_2015 <- data_west_2015 %>%
+  summarise(
+    stadsdeel = "West",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Combine the average income data for Zuid and West into one dataset
+inkomen_2015 <- bind_rows(avg_zuid_2015, avg_west_2015)
+
+# Add the year as a column to the combined income dataset
+inkomen_2015$jaar <- 2015
+
+# Export datasets to CSV files
+write_csv(inkomen_2015, "data/inkomen_2015.csv")
+write_csv(avg_west_2015, "data/avg_west_2015.csv")
+write_csv(avg_zuid_2015, "data/avg_zuid_2015.csv")
+write_csv(data_west_2015, "data/data_west_2015.csv")
+write_csv(data_zuid_2015, "data/data_zuid_2015.csv")
+```
+
+```{r data cleaning income 2017}
+# Load the dplyr package for data manipulation
+library(dplyr)
+
+# Load the 2017 neighborhood statistics dataset
+data <- read.csv("data/Kerncijfers_wijken_en_buurten_2017.csv")
+
+# Define the neighborhoods (wijken) in the Zuid district
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+
+# Define the neighborhoods in the West district
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+# Filter the full dataset to include only Zuid neighborhoods
+data_zuid_2017 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_zuid)
+
+# Select relevant columns (neighborhood name and average income) and rename them for Zuid
+data_zuid_2017 <- data_zuid_2017 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = Inkomen.Inkomen.van.personen.Gemiddeld.inkomen.per.inkomensontvanger...x.1.000.euro.
+  )
+
+# Filter the full dataset to include only West neighborhoods
+data_west_2017 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_west)
+
+# Select relevant columns (neighborhood name and average income) and rename them for West
+data_west_2017 <- data_west_2017 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = Inkomen.Inkomen.van.personen.Gemiddeld.inkomen.per.inkomensontvanger...x.1.000.euro.
+  )
+
+# Convert income column to numeric for Zuid (in case it's read as factor or string)
+data_zuid_2017$gem_inkomen <- as.numeric(as.character(data_zuid_2017$gem_inkomen))
+
+# Convert income column to numeric for West
+data_west_2017$gem_inkomen <- as.numeric(as.character(data_west_2017$gem_inkomen))
+
+# Calculate average income for Zuid and add corresponding district label
+avg_zuid_2017 <- data_zuid_2017 %>%
+  summarise(
+    stadsdeel = "Zuid",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Calculate average income for West and add corresponding district label
+avg_west_2017 <- data_west_2017 %>%
+  summarise(
+    stadsdeel = "West",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Combine both district summaries into a single dataset
+inkomen_2017 <- bind_rows(avg_zuid_2017, avg_west_2017)
+
+# Add the year column to indicate this data is from 2017
+inkomen_2017$jaar <- 2017
+
+# Export data to CSV files for further analysis or reporting
+write_csv(avg_west_2017, "data/avg_west_2017.csv")
+write_csv(avg_zuid_2017, "data/avg_zuid_2017.csv")
+write_csv(data_west_2017, "data/data_west_2017.csv")
+write_csv(data_zuid_2017, "data/data_zuid_2017.csv")
+write_csv(inkomen_2017, "data/inkomen_2017.csv")
+```
+
+```{r data cleaning income 2019}
+# Load the dplyr package for data manipulation
+library(dplyr)
+
+# Load the 2019 dataset; use dec="," to correctly interpret European-style decimal commas
+data <- read.csv("data/Kerncijfers_wijken_en_buurten_2019.csv", dec=",")
+
+# Define the neighborhoods (wijken) in the Zuid district
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+
+# Define the neighborhoods in the West district
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+# Filter data to only include Zuid neighborhoods
+data_zuid_2019 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_zuid)
+
+# Select relevant columns (neighborhood name and average income) and rename them
+data_zuid_2019 <- data_zuid_2019 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = Inkomen.Inkomen.van.personen.Gemiddeld.inkomen.per.inkomensontvanger...x.1.000.euro.
+  )
+
+# Filter data to only include West neighborhoods
+data_west_2019 <- data %>%
+  filter(Wijken.en.buurten %in% wijken_west)
+
+# Select relevant columns (neighborhood name and average income) and rename them
+data_west_2019 <- data_west_2019 %>%
+  select(
+    wijk = Wijken.en.buurten,
+    gem_inkomen = Inkomen.Inkomen.van.personen.Gemiddeld.inkomen.per.inkomensontvanger...x.1.000.euro.
+  )
+
+# Calculate average income for Zuid and label with corresponding district name
+avg_zuid_2019 <- data_zuid_2019 %>%
+  summarise(
+    stadsdeel = "Zuid",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Calculate average income for West and label with corresponding district name
+avg_west_2019 <- data_west_2019 %>%
+  summarise(
+    stadsdeel = "West",
+    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
+  )
+
+# Combine both district summaries into a single dataset
+inkomen_2019 <- bind_rows(avg_zuid_2019, avg_west_2019)
+
+# Add a column indicating the year of the data
+inkomen_2019$jaar <- 2019
+
+# Export datasets to CSV files for storage or further use
+write_csv(avg_west_2019, "data/avg_west_2019.csv")
+write_csv(avg_zuid_2019, "data/avg_zuid_2019.csv")
+write_csv(data_west_2019, "data/data_west_2019.csv")
+write_csv(data_zuid_2019, "data/data_zuid_2019.csv")
+write_csv(inkomen_2019, "data/inkomen_2019.csv")
+```
+
+```{r data cleaning rent burden 2015}
+# Load required libraries
+library(sf)        
+library(dplyr)     
+library(ggplot2)  
+
+# Combine income data for West and Zuid neighborhoods into one dataset
+inkomen_per_wijk_2015 <- bind_rows(data_west_2015, data_zuid_2015)
+
+# Create a copy to compute rent burden
+rent_burden_2015 <- inkomen_per_wijk_2015
+
+# Calculate monthly income by converting yearly income (in thousands of euros) to monthly euros
+rent_burden_2015 <- rent_burden_2015 %>% 
+  mutate(gem_inkomen_per_maand = gem_inkomen * 1000 / 12)
+
+# Define neighborhoods in each district
 wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
                  'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
                  'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
@@ -151,58 +397,226 @@ wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenb
                  'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
                  'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
 
-data_zuid_2015 <- data %>%
-  filter(Wijken.en.buurten %in% wijken_zuid)
+# Add a 'stadsdeel' (district) column and assign 'Zuid' or 'West' based on neighborhood
+rent_burden_2015$stadsdeel <- 0
+rent_burden_2015$stadsdeel <- rent_burden_2015$stadsdeel %>%
+  replace(rent_burden_2015$wijk %in% wijken_zuid, "Zuid")
+rent_burden_2015$stadsdeel <- rent_burden_2015$stadsdeel %>%
+  replace(rent_burden_2015$wijk %in% wijken_west, "West")
 
-data_zuid_2015 <- data_zuid_2015 %>%
-  select(
-    wijk = Wijken.en.buurten,
-    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
-  )
+# Load rental price data (in long format) and filter for the year 2015
+huur_long <- read_csv("data/huurprijzen_per_stadsdeel.csv")
+huur_long <- huur_long %>% filter(jaar == 2015)
 
-data_west_2015 <- data %>%
-  filter(Wijken.en.buurten %in% wijken_west)
+# Drop the 'jaar' column (since all rows are now 2015)
+huur_long$jaar <- NULL
 
-data_west_2015 <- data_west_2015 %>%
-  select(
-    wijk = Wijken.en.buurten,
-    gem_inkomen = "Inkomen|Inkomen.van.personen|Gemiddeld.inkomen.per.inkomensontvanger.x.1.000.euro"
-  )
+# Join rental price data to income data by district
+rent_burden_2015 <- rent_burden_2015 %>% 
+  full_join(huur_long, by = "stadsdeel")
 
-data_zuid_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_zuid_2015$gem_inkomen))
-data_west_2015$gem_inkomen <- as.numeric(gsub(",", ".", data_west_2015$gem_inkomen))
+# Calculate rent burden as a percentage of monthly income
+rent_burden_2015 <- rent_burden_2015 %>% 
+  mutate(Rent_burden = huurprijs / gem_inkomen_per_maand * 100)
 
-avg_zuid_2015 <- data_zuid_2015 %>%
-  summarise(
-    stadsdeel = "Zuid",
-    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
-  )
+# Export final rent burden data for 2015 to CSV
+write_csv(rent_burden_2015, "data/rent_burden_2015.csv")
+```
 
-avg_west_2015 <- data_west_2015 %>%
-  summarise(
-    stadsdeel = "West",
-    gem_inkomen = round(mean(gem_inkomen, na.rm = TRUE), 2)
-  )
+```{r data cleaning rent burden 2017}
+# Load necessary libraries
+library(sf)        
+library(dplyr)     
+library(ggplot2)   
 
-inkomen_2015 <- bind_rows(avg_zuid_2015, avg_west_2015)
+# Combine income data from West and Zuid neighborhoods for the year 2017
+inkomen_per_wijk_2017 <- bind_rows(data_west_2017, data_zuid_2017)
 
-inkomen_2015$jaar <- 2015
+# Copy data to a new object to calculate rent burden
+rent_burden_2017 <- inkomen_per_wijk_2017
+
+# Compute monthly income from annual income (convert from thousands of euros to euros per month)
+rent_burden_2017 <- rent_burden_2017 %>% 
+  mutate(gem_inkomen_per_maand = gem_inkomen * 1000 / 12)
+
+# Define neighborhood names for Zuid and West districts
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+# Initialize 'stadsdeel' column and assign district names based on neighborhood
+rent_burden_2017$stadsdeel <- 0
+rent_burden_2017$stadsdeel <- rent_burden_2017$stadsdeel %>%
+  replace(rent_burden_2017$wijk %in% wijken_zuid, "Zuid")
+rent_burden_2017$stadsdeel <- rent_burden_2017$stadsdeel %>%
+  replace(rent_burden_2017$wijk %in% wijken_west, "West")
+
+# Load rent price data and filter for the year 2017
+huur_long <- read_csv("data/huurprijzen_per_stadsdeel.csv")
+huur_long <- huur_long %>% filter(jaar == 2017)
+
+# Remove the 'jaar' column since it's no longer needed after filtering
+huur_long$jaar <- NULL
+
+# Preview stadsdeel column (likely for debugging or inspection)
+huur_long$stadsdeel
+
+# Join rent prices to income data by district
+rent_burden_2017 <- rent_burden_2017 %>% 
+  full_join(huur_long, by = "stadsdeel")
+
+# Calculate rent burden as percentage of monthly income
+rent_burden_2017 <- rent_burden_2017 %>% 
+  mutate(Rent_burden = huurprijs / gem_inkomen_per_maand * 100)
+
+# Save the resulting rent burden data for 2017 to a CSV file
+write_csv(rent_burden_2017, "data/rent_burden_2017.csv")
+```
+
+```{r data cleaning rent burden 2019}
+# Load required libraries
+library(sf)        
+library(dplyr)     
+library(ggplot2)   
+
+# Combine income data from West and Zuid neighborhoods for 2019
+inkomen_per_wijk_2019 <- bind_rows(data_west_2019, data_zuid_2019)
+
+# Duplicate the data for calculating rent burden
+rent_burden_2019 <- inkomen_per_wijk_2019
+
+# Calculate average monthly income from annual income (in euros, originally in thousands)
+rent_burden_2019 <- rent_burden_2019 %>%
+  mutate(gem_inkomen_per_maand = gem_inkomen * 1000 / 12)
+
+# Define neighborhoods belonging to Zuid
+wijken_zuid <- c('Zuidas','Oude Pijp','Nieuwe Pijp','Zuid Pijp','Hoofddorppleinbuurt',
+                 'Schinkelbuurt','Willemspark','Museumkwartier','Stadionbuurt','Apollobuurt',
+                 'Buitenveldert-Oost','Buitenveldert-West','Rijnbuurt','Scheldebuurt',
+                 'IJselbuurt', 'Prinses Irenebuurt e.o.')
+
+# Define neighborhoods belonging to West
+wijken_west <- c('Houthavens', 'Spaarndammer- en Zeeheldenbuurt', 'Staatsliedenbuurt',
+                 'Frederik Hendrikbuurt', 'Da Costabuurt', 'Kinkerbuurt', 'Van Lennepbuurt',
+                 'Helmersbuurt', 'Overtoomse Sluis', 'Chassébuurt', 'Landlust', 'Erasmuspark',
+                 'De Kolenkit', 'Geuzenbuurt', 'Van Galenbuurt', 'Hoofdweg e.o.',
+                 'Westindische Buurt','Vondelbuurt','Centrale Markt', 'Sloterdijk')
+
+# Initialize the 'stadsdeel' (district) column
+rent_burden_2019$stadsdeel <- 0
+
+# Assign 'Zuid' to neighborhoods in Zuid
+rent_burden_2019$stadsdeel <- rent_burden_2019$stadsdeel %>%
+  replace(rent_burden_2019$wijk %in% wijken_zuid, "Zuid")
+
+# Assign 'West' to neighborhoods in West
+rent_burden_2019$stadsdeel <- rent_burden_2019$stadsdeel %>%
+  replace(rent_burden_2019$wijk %in% wijken_west, "West")
+
+# Read rent prices per district and filter for 2019
+huur_long <- read_csv("data/huurprijzen_per_stadsdeel.csv")
+huur_long <- huur_long %>% filter(jaar == 2019)
+
+# Remove the 'jaar' column as it's no longer needed after filtering
+huur_long$jaar <- NULL
+
+# Display the 'stadsdeel' column (likely for debugging or checking values)
+huur_long$stadsdeel
+
+# Merge rent price data with income data based on district
+rent_burden_2019 <- rent_burden_2019 %>% 
+  full_join(huur_long, by = "stadsdeel")
+
+# Calculate rent burden as percentage of income
+rent_burden_2019 <- rent_burden_2019 %>%
+  mutate(Rent_burden = huurprijs / gem_inkomen_per_maand * 100)
+
+# Export the resulting dataset to a CSV file
+write_csv(rent_burden_2019, "data/rent_burden_2019.csv")
+```
+
+```{r merging income and hurprijs}
+# Load required libraries
+library(sf)       
+library(dplyr)    
+library(ggplot2)  
+
+# Load income data for 2015
+inkomen_2015 <- read_csv("data/inkomen_2015.csv")
+
+# Combine income data across multiple years into a single dataframe
+inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
+
+# Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
+merged_df <- inkomen %>%
+  left_join(huur_long, by = c("stadsdeel", "jaar"))
+```
+
+```{r merging rent burden}
+# Merge rent burden data for 2015, 2017, and 2019 into a single dataframe
+merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019)
+
+# Add a 'jaar' (year) column to each individual year's dataset
+rent_burden_2015 <- rent_burden_2015 %>% mutate(jaar = 2015)
+rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
+rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
+
+# Recombine the updated datasets with year included and sort by year
+merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019) %>%
+  arrange(jaar)
 ```
 
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
 
 ## 3.2 Generate necessary variables
 
-Variable 1
+Variable 1: Rent burden\
+For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
-```{r gen_var1}
+```{r gen_var1_rent_burden_per_borough}
+# Convert average annual income (in thousands of euros) to monthly income in euros
+merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
 
+# Calculate rent burden as a percentage of monthly income
+merged_df$rent_burden <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
 ```
 
-Variable 2
+For the spatial analysis we uses rent burden per neighborhood. Therefore we calculated that one per neighborhood that belonged to each district.
 
-```{r gen_var2}
+```{r gen_var1_rent_burden_per_neighborhood}
+# Rent burden per neighborhood in 2019 for example (can also find in previous code)
+# Calculate average monthly income from annual income (in euros, originally in thousands)
+rent_burden_2019 <- rent_burden_2019 %>%
+  mutate(gem_inkomen_per_maand = gem_inkomen * 1000 / 12)
 
+# Calculate rent burden as percentage of income
+rent_burden_2019 <- rent_burden_2019 %>%
+  mutate(Rent_burden = huurprijs / gem_inkomen_per_maand * 100)
+```
+
+Variable 2: Affordability pressure
+
+```{r gen_var2_affordability pressure}
+# Arrange the data by district (stadsdeel) and year for proper chronological order
+data_with_growth <- merged_df %>%
+  arrange(stadsdeel, jaar) %>%
+  group_by(stadsdeel) %>%
+  mutate(
+    # Calculate income growth (%) compared to the previous year within each district
+    groei_inkomen = (gem_inkomen - lag(gem_inkomen)) / lag(gem_inkomen) * 100,
+    
+    # Calculate rent price growth (%) compared to the previous year within each district
+    groei_huurprijs = (huurprijs - lag(huurprijs)) / lag(huurprijs) * 100
+  )
+
+# Compute affordability pressure as the difference between rent growth and income growth
+data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - data_with_growth$groei_inkomen)
 ```
 
 ## 3.3 Visualize temporal variation

@@ -2,37 +2,54 @@
 # # Optional for interactive map:
 # install.packages("leaflet")
 
-library(sf)
-library(dplyr)
-library(ggplot2)
+# Load required libraries
+library(sf)       
+library(dplyr)    
+library(ggplot2)  
+
+# Load income data for 2015
 inkomen_2015 <- read_csv("data/inkomen_2015.csv")
+
+# Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
-
+# Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
 merged_df <- inkomen %>%
   left_join(huur_long, by = c("stadsdeel", "jaar"))
+
+# Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
+
+# Calculate rent burden as a percentage of monthly income
 merged_df$rent_burden <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
 
-
+# Arrange the data by district (stadsdeel) and year for proper chronological order
 data_with_growth <- merged_df %>%
   arrange(stadsdeel, jaar) %>%
   group_by(stadsdeel) %>%
   mutate(
+    # Calculate income growth (%) compared to the previous year within each district
     groei_inkomen = (gem_inkomen - lag(gem_inkomen)) / lag(gem_inkomen) * 100,
+    
+    # Calculate rent price growth (%) compared to the previous year within each district
     groei_huurprijs = (huurprijs - lag(huurprijs)) / lag(huurprijs) * 100
   )
+
+# Compute affordability pressure as the difference between rent growth and income growth
 data_with_growth$affordability_pressure <- (data_with_growth$groei_huurprijs - data_with_growth$groei_inkomen)
 
-#merge rentburden 2015, 2017, 2019
+
+# Merge rent burden data for 2015, 2017, and 2019 into a single dataframe
 merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019)
+
+# Add a 'jaar' (year) column to each individual year's dataset
 rent_burden_2015 <- rent_burden_2015 %>% mutate(jaar = 2015)
 rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
 rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
 
+# Recombine the updated datasets with year included and sort by year
 merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_2019) %>%
   arrange(jaar)
-
 
 
 amsterdam_map <- st_read("data/adam.geojson")
