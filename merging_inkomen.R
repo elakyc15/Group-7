@@ -38,11 +38,11 @@ inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 
 # Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
-
 huur_long$jaar <- as.numeric(huur_long$jaar)
 # Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
 merged_df <- inkomen %>%
   left_join(huur_long, by = c("stadsdeel", "jaar"))
+
 
 # Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12

@@ -116,11 +116,15 @@ colnames(huur_particulier) <- sub("_p", "", colnames(huur_particulier))
 # Convert year columns to numeric
 huur_particulier[, -1] <- lapply(huur_particulier[, -1], as.numeric)
 
+huur_long <- read_csv("data/huurprijzen_per_stadsdeel.csv")
+
+huur_long$jaar <- as.numeric(huur_long$jaar)
 # Reshape data to long format: one row per district-year with rental price
 huur_long <- pivot_longer(huur_particulier, 
                           cols = -stadsdeel, 
                           names_to = "jaar", 
                           values_to = "huurprijs")
+
 ```
 
 ```{r data_cleaning_income2015, include=FALSE}
@@ -378,7 +382,6 @@ rent_burden_2015$stadsdeel <- rent_burden_2015$stadsdeel %>%
   replace(rent_burden_2015$wijk %in% wijken_west, "West")
 
 # Load rental price data (in long format) and filter for the year 2015
-huur_long <- read_csv("data/huurprijzen_per_stadsdeel.csv")
 huur_long <- huur_long %>% filter(jaar == 2015)
 
 # Drop the 'jaar' column (since all rows are now 2015)
@@ -505,15 +508,17 @@ write_csv(rent_burden_2019, "data/rent_burden_2019.csv")
 ```
 
 ```{r merging_income_and_hurprijs, include=FALSE}
+# Reshape data to long format: one row per district-year with rental price
+huur_long <- pivot_longer(huur_particulier, 
+                          cols = -stadsdeel, 
+                          names_to = "jaar", 
+                          values_to = "huurprijs")
 # Load income data for 2015
 inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 
 # Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
-# Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
-merged_df <- inkomen %>%
-  #left_join(huur_long, by = c("stadsdeel", "jaar"))
 ```
 
 ```{r merging_rent_burden, include=FALSE}
@@ -535,6 +540,8 @@ merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_
 Variable 1: Rent burden For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
 ```{r gen_var1_rent_burden_per_borough, include=FALSE}
+merged_df <- read_csv("merging_inkomen.csv")
+
 # Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
 
