@@ -57,7 +57,7 @@ huur_long <- pivot_longer(huur_particulier,
 
 
 # 8. Zet jaar om naar numeriek (voor x-as)
-#huur_long$jaar <- as.numeric(huur_long$jaar)
+huur_long$jaar <- as.numeric(huur_long$jaar)
 
 # 9. Maak de line plot
 #ggplot(huur_long, aes(x = jaar, y = huurprijs, color = stadsdeel)) +

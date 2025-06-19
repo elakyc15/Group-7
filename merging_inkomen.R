@@ -1,18 +1,45 @@
-# install.packages(c("sf", "ggplot2", "dplyr", "readr"))
-# # Optional for interactive map:
-# install.packages("leaflet")
-
 # Load required libraries
 library(sf)       
 library(dplyr)    
 library(ggplot2)  
+# Load required package
+library(dplyr)
 
+# Load rental price data, skipping the first row which likely contains metadata
+huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
+
+# Keep only rows for West (E West) and Zuid (K Zuid)
+huur <- huur[huur$V2 %in% c("E West", "K Zuid"), ]
+
+# Rename columns for clarity
+colnames(huur) <- c("Index", "stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p", 
+                    "2013_c", "2015_c", "2017_c", "2019_c")
+
+# Select only private sector rent columns and district names
+huur_particulier <- huur[, c("stadsdeel", "2013_p", "2015_p", "2017_p", "2019_p")]
+
+# Recode district names to simplified labels
+huur_particulier <- huur_particulier %>%
+  mutate(stadsdeel = recode(stadsdeel, "E West" = "West", "K Zuid" = "Zuid"))
+
+# Remove '_p' suffix from column names
+colnames(huur_particulier) <- sub("_p", "", colnames(huur_particulier)) 
+
+# Convert year columns to numeric
+huur_particulier[, -1] <- lapply(huur_particulier[, -1], as.numeric)
+
+# Reshape data to long format: one row per district-year with rental price
+huur_long <- pivot_longer(huur_particulier, 
+                          cols = -stadsdeel, 
+                          names_to = "jaar", 
+                          values_to = "huurprijs")
 # Load income data for 2015
 inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 
 # Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
+huur_long$jaar <- as.numeric(huur_long$jaar)
 # Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
 merged_df <- inkomen %>%
   left_join(huur_long, by = c("stadsdeel", "jaar"))

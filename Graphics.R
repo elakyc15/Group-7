@@ -57,6 +57,16 @@ library(viridis)
 
 # --- Prepare 2017 Data ---
 
+amsterdam_map <- st_read("data/adam.geojson")
+amsterdam_map <- amsterdam_map %>%
+  rename(wijk = wijknaam)
+amsterdam_map <- amsterdam_map %>%
+  filter(gemeentenaam == "Amsterdam")
+
+combined_df <- bind_rows(data_zuid_2017, data_west_2017)
+map_data <- amsterdam_map %>%
+  left_join(combined_df, by = "wijk")
+
 # Compute mean rent burden per neighbourhood (wijk) for 2017
 mean_rent_map_2017 <- rent_burden_2017 %>%
   filter(!is.na(Rent_burden)) %>%
