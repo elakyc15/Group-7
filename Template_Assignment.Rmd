@@ -547,7 +547,9 @@ merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_
 
 ## 3.2 Generate necessary variables
 
-Variable 1: Rent burden For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
+Variable 1: Rent burden: Calculated as (average rent / average income) × 100%, this variable expresses the burden of rent in relation to income.
+
+Rent burden For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
 ```{r gen_var1_rent_burden_per_borough, include=FALSE}
 # Convert average annual income (in thousands of euros) to monthly income in euros
@@ -618,7 +620,7 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   theme_minimal()
 ```
 
-We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two colored lines one for West and one for Zuid so you can see how rent burden evolved over **time** between 2017 and 2019. By placing time on the horizontal axis and clearly labeling each district, the chart directly aligns with our question about temporal variation in affordability stress, revealing exactly when and by how much Zuid’s rent burden outpaced West’s.
+We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two colored lines one for West and one for Zuid so you can see how rent burden evolved over time between 2017 and 2019. By placing time on the horizontal axis and clearly labeling each district, the chart directly aligns with our question about temporal variation in affordability stress, revealing exactly when and by how much Zuid’s rent burden outpaced West’s.
 
 ## 3.4 Visualize spatial variation
 
@@ -717,7 +719,7 @@ ggplot(map_data_2019) +
   )
 ```
 
-We’ll use the official Amsterdam neighborhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighborhoods that need the most support.
+We’ll use the official Amsterdam neighborhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every neighborhood but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colors mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighborhoods that need the most support.
 
 ## 3.5 Visualize sub-population variation
 
