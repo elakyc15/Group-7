@@ -540,7 +540,7 @@ merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_
 Variable 1: Rent burden For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
 ```{r gen_var1_rent_burden_per_borough, include=FALSE}
-merged_df <- read_csv("merging_inkomen.csv")
+merged_df <- read_csv("merging_inkomen.R")
 
 # Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
