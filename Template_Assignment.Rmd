@@ -55,11 +55,7 @@ Most studies on Amsterdam’s rising only look at city-wide numbers and treat en
 
 # Part 2 - Data Sourcing
 
-```{r}
-<<<<<<< Updated upstream
-=======
 
-```
 
 ## 2.1 Load in the data
 >>>>>>> Stashed changes
