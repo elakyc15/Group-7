@@ -1,23 +1,25 @@
 ---
 title: "The Impact of Rent Increases on Different Income Groups in Amsterdam-West and Amsterdam-South (2017 vs. 2019)"
-author: "Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357"
+author: "Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-2846357, Daniëlle Goede-2853993, Jesper Kouw-2863970"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
 # Set-up your environment
 
-```{r package_install}
-install.packages("tidyverse")
-```
-
 ```{r packages}
 require(tidyverse)
+require(dplyr)
+require(stringr)
+require(readr)
+require(sf)        
+require(ggplot2)  
+require(viridis)
 ```
 
 # Title Page
 
-Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357, Daniëlle Goede, Jesper Kouw-2863970
+Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357, Daniëlle Goede-2853993, Jesper Kouw-2863970
 
 Tutorial 2, Group 7
 
@@ -91,9 +93,6 @@ While these data sources offer valuable insights, they also come with certain li
 For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighborhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
 
 ```{r data_cleaning_huurprijzen, include=FALSE}
-# Load required package
-library(dplyr)
-
 # Load rental price data, skipping the first row which likely contains metadata
 huur <- read.csv("data/huurprijzen.csv", skip = 1, header = FALSE)
 
@@ -125,11 +124,6 @@ huur_long <- pivot_longer(huur_particulier,
 ```
 
 ```{r data_cleaning_income2015, include=FALSE}
-# Load necessary libraries for data manipulation and string processing
-library(dplyr)
-library(stringr)
-library(readr)
-
 # Read the first two rows after skipping 3 to create multi-line headers
 headers <- read.csv("data/Kerncijfers_wijken_en_buurten_2015.csv", skip = 3, nrows = 2, sep = ";", header = FALSE)
 
@@ -215,9 +209,6 @@ write_csv(data_zuid_2015, "data/data_zuid_2015.csv")
 ```
 
 ```{r data_cleaning_income_2017, include=FALSE}
-# Load the dplyr package for data manipulation
-library(dplyr)
-
 # Load the 2017 neighborhood statistics dataset
 data <- read.csv("data/Kerncijfers_wijken_en_buurten_2017.csv")
 
@@ -291,9 +282,6 @@ write_csv(inkomen_2017, "data/inkomen_2017.csv")
 ```
 
 ```{r data_cleaning_income_2019, include=FALSE}
-# Load the dplyr package for data manipulation
-library(dplyr)
-
 # Load the 2019 dataset; use dec="," to correctly interpret European-style decimal commas
 data <- read.csv("data/Kerncijfers_wijken_en_buurten_2019.csv", dec=",")
 
@@ -361,11 +349,6 @@ write_csv(inkomen_2019, "data/inkomen_2019.csv")
 ```
 
 ```{r data_cleaning_rent_burden_2015, include=FALSE}
-# Load required libraries
-library(sf)        
-library(dplyr)     
-library(ggplot2)  
-
 # Combine income data for West and Zuid neighborhoods into one dataset
 inkomen_per_wijk_2015 <- bind_rows(data_west_2015, data_zuid_2015)
 
@@ -414,11 +397,6 @@ write_csv(rent_burden_2015, "data/rent_burden_2015.csv")
 ```
 
 ```{r data_cleaning_rent_burden_2017, include=FALSE}
-# Load necessary libraries
-library(sf)        
-library(dplyr)     
-library(ggplot2)   
-
 # Combine income data from West and Zuid neighborhoods for the year 2017
 inkomen_per_wijk_2017 <- bind_rows(data_west_2017, data_zuid_2017)
 
@@ -470,11 +448,6 @@ write_csv(rent_burden_2017, "data/rent_burden_2017.csv")
 ```
 
 ```{r data_cleaning_rent_burden_2019, include=FALSE}
-# Load required libraries
-library(sf)        
-library(dplyr)     
-library(ggplot2)   
-
 # Combine income data from West and Zuid neighborhoods for 2019
 inkomen_per_wijk_2019 <- bind_rows(data_west_2019, data_zuid_2019)
 
@@ -532,11 +505,6 @@ write_csv(rent_burden_2019, "data/rent_burden_2019.csv")
 ```
 
 ```{r merging_income_and_hurprijs, include=FALSE}
-# Load required libraries
-library(sf)       
-library(dplyr)    
-library(ggplot2)  
-
 # Load income data for 2015
 inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 
@@ -611,9 +579,6 @@ For the affordability pressure we combined the percentage change of rent increas
 How has rent burden evolved from 2017 to 2019 in West vs. Zuid?
 
 ```{r Multiline_plot_of_Rent_Burden_over_time_for_West_and_Zuid, include=FALSE}
-
-library(ggplot2)
-
 # Create a line plot showing the rent burden across years for each stadsdeel (district)
 ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   
@@ -645,9 +610,6 @@ We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two
 How does rent burden vary across neighborhoods in Amsterdam West vs. Zuid?
 
 ```{r Choropleth_Maps_Rent_Burden_by_neighborhood_2017, include=FALSE}
-library(dplyr)
-library(ggplot2)
-library(viridis)
 # Compute mean rent burden per neighborhood (wijk) for 2017
 mean_rent_map_2017 <- rent_burden_2017 %>%
   filter(!is.na(Rent_burden)) %>%
@@ -737,9 +699,6 @@ We’ll use the official Amsterdam neighborhood shapefile to draw West and Zuid 
 Which neighborhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
 
 ```{r Boxplot_of_Rent_Burden_per_neighborhood_or_2017_and_2019, include=FALSE}
-library(ggplot2)
-library(dplyr)
-
 # Add year column to each dataset
 rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
 rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
@@ -793,9 +752,6 @@ We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, g
 What happened to rent burden growth when Airbnb caps came in (2018 and 2019)?
 
 ```{r Line_Plot_of_Affordability_Pressure_Index_with_Airbnb_Cap_Annotation, include=FALSE}
-library(dplyr)
-library(ggplot2)
-
 # Create base values for 2015: index set to 100 for both stadsdelen
 base_2015 <- data.frame(
   stadsdeel = c("West", "Zuid"),
