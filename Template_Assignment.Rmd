@@ -94,7 +94,7 @@ While these data sources offer valuable insights, they also come with certain li
 
 For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighbourhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
 
-```{r data cleaning huurprijzen}
+```{r data cleaning huurprijzen, echo=FALSE}
 # Load required package
 library(dplyr)
 
