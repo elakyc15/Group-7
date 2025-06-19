@@ -29,7 +29,7 @@ Chantal Schouwenaar
 
 ***The Impact of Rent Increases on Different Incomes in Amsterdam West vs Amsterdam South***
 
-In the last few years, rent prices in the Netherlands have increased significantly, especially in cities like Amsterdam. Within Amsterdam, neighbourhoods such as Amsterdam West and Amsterdam South have seen noticeable differences in how rising rents affect residents. This has made it increasingly difficult for people with low or average incomes to find affordable housing (Eichholtz, 2022).
+In the last few years, rent prices in the Netherlands have increased significantly, especially in cities like Amsterdam. Within Amsterdam, neighborhoods such as Amsterdam West and Amsterdam South have seen noticeable differences in how rising rents affect residents. This has made it increasingly difficult for people with low or average incomes to find affordable housing (Eichholtz, 2022).
 
 While some people's incomes have not increased much, rents continue to rise. This means a larger portion of their income goes to rent, leaving less for essential needs like food, healthcare, or education (Custers, 2022).
 
@@ -37,7 +37,7 @@ Between 2017 and 2019, Amsterdam saw an increase of long-term rental homes being
 
 This is a serious issue because everyone needs a safe and affordable place to live. If rent prices keep rising, some residents may be forced to move to less desirable areas, live in smaller or lower-quality homes, or even face homelessness. By examining rent prices from 2017 to 2019 and comparing the impact on different incomes in Amsterdam West and Amsterdam South, we can gain a better understanding of who is most affected. This insight is crucial for creating more effective and fair housing policies in the future.
 
-Most studies on Amsterdam’s rising only look at city-wide numbers and treat entire boroughs the same. This study focuses on the key 2017–2019 period when Airbnb really took off and new regulations were introduced, breaks the data down into small neighbourhoods in West and South, and shows solid statistics to help shape fairer housing policies.
+Most studies on Amsterdam’s rising only look at city-wide numbers and treat entire boroughs the same. This study focuses on the key 2017–2019 period when Airbnb really took off and new regulations were introduced, breaks the data down into small neighborhoods in West and South, and shows solid statistics to help shape fairer housing policies.
 
 # Part 2 - Data Sourcing
 
@@ -82,17 +82,17 @@ Rent burden: Calculated as (average rent / average income) × 100%, this variabl
 
 Affordability pressure: Calculated as (rent increase % – income growth %). A positive value indicates that rent is growing faster than income, signaling worsening affordability.
 
-The rent data file covers four specific years at the broader district level, showing how rents shifted over time in areas like West and Zuid. The CBS is a single year, look at who lives in each neighbourhood and what they earn. By combining them, we can link the big rent trends to the real income and housing profiles of local residents.
+The rent data file covers four specific years at the broader district level, showing how rents shifted over time in areas like West and Zuid. The CBS is a single year, look at who lives in each neighborhood and what they earn. By combining them, we can link the big rent trends to the real income and housing profiles of local residents.
 
 The selected datasets provide a balanced combination of objective and subjective information, allowing for a nuanced analysis of both economic affordability and perceived housing conditions. Using Amsterdam-West and Amsterdam-Zuid as contrasting districts supports a clear comparison between relatively affordable and expensive housing areas.
 
-While these data sources offer valuable insights, they also come with certain limitations. One key issue is timeliness, as administrative records may be subject to delays in reporting, which can reduce their relevance in a fast-evolving housing market. Moreover, the survey data's representativeness can be affected by non-response bias or insufficient coverage of specific demographic groups, despite the extensive scope of WiMRA. The level of detail is another constraint since the data is presented at an aggregated district or neighbourhood level, potentially overlooking important variations at smaller geographic scales, such as individual streets or blocks. Lastly, the derived indicators, such as rent quota and affordability pressure, are based on averages, which may mask the wide range of experiences and disparities among different households.
+While these data sources offer valuable insights, they also come with certain limitations. One key issue is timeliness, as administrative records may be subject to delays in reporting, which can reduce their relevance in a fast-evolving housing market. Moreover, the survey data's representativeness can be affected by non-response bias or insufficient coverage of specific demographic groups, despite the extensive scope of WiMRA. The level of detail is another constraint since the data is presented at an aggregated district or neighborhood level, potentially overlooking important variations at smaller geographic scales, such as individual streets or blocks. Lastly, the derived indicators, such as rent quota and affordability pressure, are based on averages, which may mask the wide range of experiences and disparities among different households.
 
 # Part 3 - Quantifying
 
 ## 3.1 Data cleaning
 
-For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighbourhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
+For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighborhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
 
 ```{r data cleaning huurprijzen, echo=FALSE}
 # Load required package
@@ -647,16 +647,16 @@ We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two
 
 ## 3.4 Visualize spatial variation
 
-How does rent burden vary across neighbourhoods in Amsterdam West vs. Zuid?
+How does rent burden vary across neighborhoods in Amsterdam West vs. Zuid?
 
-```{r Choropleth Maps: Rent Burden by Neighbourhood 2017}
+```{r Choropleth Maps: Rent Burden by neighborhood 2017}
 library(dplyr)
 library(ggplot2)
 library(viridis)
 
 # --- Prepare 2017 Data ---
 
-# Compute mean rent burden per neighbourhood (wijk) for 2017
+# Compute mean rent burden per neighborhood (wijk) for 2017
 mean_rent_map_2017 <- rent_burden_2017 %>%
   filter(!is.na(Rent_burden)) %>%
   group_by(wijk) %>%
@@ -668,7 +668,7 @@ map_data_2017 <- amsterdam_map %>%
 
 # --- Prepare 2019 Data ---
 
-# Compute mean rent burden per neighbourhood (wijk) for 2019
+# Compute mean rent burden per neighborhood (wijk) for 2019
 mean_rent_map_2019 <- rent_burden_2019 %>%
   filter(!is.na(Rent_burden)) %>%
   group_by(wijk) %>%
@@ -693,10 +693,10 @@ breaks_seq <- seq(
   by = 5
 )
 
-# --- Plot: Average Rent Burden by Neighbourhood in 2017 ---
+# --- Plot: Average Rent Burden by neighborhood in 2017 ---
 
 ggplot(map_data_2017) +
-  geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw neighbourhoods
+  geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw neighborhoods
   scale_fill_viridis_c(   # apply perceptually uniform color scale
     option = "magma",
     na.value = "grey90",   # color for NA values
@@ -705,7 +705,7 @@ ggplot(map_data_2017) +
     breaks = breaks_seq
   ) +
   labs(
-    title = "Average Rent Burden by Neighbourhood in Amsterdam (2017)",
+    title = "Average Rent Burden by neighborhood in Amsterdam (2017)",
     fill = "Mean Rent Burden (%)"
   ) +
   theme_minimal() +
@@ -717,11 +717,11 @@ ggplot(map_data_2017) +
 
 ```
 
-```{r Choropleth Maps: Rent Burden by Neighbourhood 2019}
-# --- Plot: Average Rent Burden by Neighbourhood in 2019 ---
+```{r Choropleth Maps: Rent Burden by neighborhood 2019}
+# --- Plot: Average Rent Burden by neighborhood in 2019 ---
 
 ggplot(map_data_2019) +
-  geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw neighbourhoods
+  geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw neighborhoods
   scale_fill_viridis_c(
     option = "magma",
     na.value = "grey90",
@@ -730,7 +730,7 @@ ggplot(map_data_2019) +
     breaks = breaks_seq
   ) +
   labs(
-    title = "Average Rent Burden by Neighbourhood in Amsterdam (2019)",
+    title = "Average Rent Burden by neighborhood in Amsterdam (2019)",
     fill = "Mean Rent Burden (%)"
   ) +
   theme_minimal() +
@@ -740,13 +740,13 @@ ggplot(map_data_2019) +
   )
 ```
 
-We’ll use the official Amsterdam neighbourhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighbourhoods that need the most support.
+We’ll use the official Amsterdam neighborhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighborhoods that need the most support.
 
 ## 3.5 Visualize sub-population variation
 
-Which neighbourhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
+Which neighborhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
 
-```{r Boxplot of Rent Burden per Neighbourhood (Wijk) for 2017 and 2019}
+```{r Boxplot of Rent Burden per neighborhood (Wijk) for 2017 and 2019}
 
 library(ggplot2)
 library(dplyr)
@@ -776,8 +776,8 @@ ggplot(rent_burden_clean, aes(x = reorder(wijk, Rent_burden), y = Rent_burden, f
   
   # Labels and title
   labs(
-    title = "Rent Burden Distribution Across Neighbourhoods in West and Zuid (2017 & 2019)",
-    x = "Neighbourhood (Wijk)",
+    title = "Rent Burden Distribution Across neighborhoods in West and Zuid (2017 & 2019)",
+    x = "neighborhood (Wijk)",
     y = "Rent Burden (% of income spent on rent)",
     fill = "Stadsdeel",
     color = "Year"
@@ -797,7 +797,7 @@ ggplot(rent_burden_clean, aes(x = reorder(wijk, Rent_burden), y = Rent_burden, f
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15)))
 ```
 
-We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, grouping boxes by neighbourhood and coloring them by borough (West vs Zuid), then facet the entire plot into two panels one for West, one for Zuid. This setup treats each borough as a sub-population, so you can directly compare how rent burden distributions (medians, IQRs, and upper tails) differ across neighbourhoods and between boroughs. A concise caption will explain that taller boxes and longer upper whiskers signal where affordability stress is most severe, tying the visualization back to our question about which neighbourhoods and which sub-populations carry the heaviest rent burden.
+We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, grouping boxes by neighborhood and coloring them by borough (West vs Zuid), then facet the entire plot into two panels one for West, one for Zuid. This setup treats each borough as a sub-population, so you can directly compare how rent burden distributions (medians, IQRs, and upper tails) differ across neighborhoods and between boroughs. A concise caption will explain that taller boxes and longer upper whiskers signal where affordability stress is most severe, tying the visualization back to our question about which neighborhoods and which sub-populations carry the heaviest rent burden.
 
 ## 3.6 Event analysis
 
@@ -880,7 +880,7 @@ We’ll plot a timeline of the year-over-year percent change in rent burden (y-a
 
 ## 5.1 Github repository link
 
-Provide the link to your PUBLIC repository here: ...
+Provide the link to your PUBLIC repository here: <https://github.com/elakyc15/Group-7>
 
 ## 5.2 Reference list
 
