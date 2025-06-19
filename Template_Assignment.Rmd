@@ -1,5 +1,5 @@
 ---
-title: "The Impact of Rent Increases on Different Income Groups in Amsterdam-West and Amsterdam-South (2017 vs. 2019)"
+title: "The Impact of Rent Increases on Different Income Groups in Amsterdam-West and Amsterdam-Zuid (2017 vs. 2019)"
 author: "Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-2846357, Daniëlle Goede-2853993, Jesper Kouw-2863970"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -31,17 +31,17 @@ Chantal Schouwenaar
 
 ## 1.1 Describe the Social Problem
 
-***The Impact of Rent Increases on Different Incomes in Amsterdam West vs Amsterdam South***
+***The Impact of Rent Increases on Different Incomes in Amsterdam West vs Amsterdam Zuid***
 
-In the last few years, rent prices in the Netherlands have increased significantly, especially in cities like Amsterdam. Within Amsterdam, neighborhoods such as Amsterdam West and Amsterdam South have seen noticeable differences in how rising rents affect residents. This has made it increasingly difficult for people with low or average incomes to find affordable housing (Eichholtz, 2022).
+In the last few years, rent prices in the Netherlands have increased significantly, especially in cities like Amsterdam. Within Amsterdam, neighborhoods such as Amsterdam West and Amsterdam Zuid have seen noticeable differences in how rising rents affect residents. This has made it increasingly difficult for people with low or average incomes to find affordable housing (Eichholtz, 2022).
 
 While some people's incomes have not increased much, rents continue to rise. This means a larger portion of their income goes to rent, leaving less for essential needs like food, healthcare, or education (Custers, 2022).
 
 Between 2017 and 2019, Amsterdam saw an increase of long-term rental homes being switched into short-term tourist lets on platforms like Airbnb, which reduced the supply of housing for residents and drove up rental prices. To oppose this the city first limited home‐sharing to 60 nights per year in 2018 and then halved that limit to 30 nights in 2019, and although these rules slowed the growth of short‐term lets, they came after rents had already spiked, so long‐term rents continued to climb despite the new regulations. (Valente, 2023)
 
-This is a serious issue because everyone needs a safe and affordable place to live. If rent prices keep rising, some residents may be forced to move to less desirable areas, live in smaller or lower-quality homes, or even face homelessness. By examining rent prices from 2017 to 2019 and comparing the impact on different incomes in Amsterdam West and Amsterdam South, we can gain a better understanding of who is most affected. This insight is crucial for creating more effective and fair housing policies in the future.
+This is a serious issue because everyone needs a safe and affordable place to live. If rent prices keep rising, some residents may be forced to move to less desirable areas, live in smaller or lower-quality homes, or even face homelessness. By examining rent prices from 2017 to 2019 and comparing the impact on different incomes in Amsterdam West and Amsterdam Zuid, we can gain a better understanding of who is most affected. This insight is crucial for creating more effective and fair housing policies in the future.
 
-Most studies on Amsterdam’s rising only look at city-wide numbers and treat entire boroughs the same. This study focuses on the key 2017–2019 period when Airbnb really took off and new regulations were introduced, breaks the data down into small neighborhoods in West and South, and shows solid statistics to help shape fairer housing policies.
+Most studies on Amsterdam’s rising only look at city-wide numbers and treat entire boroughs the same. This study focuses on the key 2017–2019 period when Airbnb really took off and new regulations were introduced, breaks the data down into small neighborhoods in West and Zuid, and shows solid statistics to help shape fairer housing policies.
 
 # Part 2 - Data Sourcing
 
@@ -848,6 +848,18 @@ We’ll plot a timeline of the year-over-year percent change in rent burden (y-a
 # Part 4 - Discussion
 
 ## 4.1 Discuss your findings
+
+Between 2017 and 2019, rising rent prices in Amsterdam revealed growing inequalities between districts, particularly Amsterdam-West and Amsterdam-Zuid. By combining rent statistics with income data, we were able to accurately assess the housing cost burden, defined as the percentage of household income spent on rent, across different incomes in different areas. This approach allowed us to evaluate how rent increases affected various segments of the population.
+
+Our analysis shows that the rent burden increased in both districts during this period. However, the rise was more pronounced in Amsterdam-Zuid, where rent levels were already significantly higher than in other areas. As a result, even households in higher-income brackets began to experience relatively greater financial pressure. This contrasts with Amsterdam-West, where although the rent burden also grew, it did so at a more moderate pace, suggesting a relatively less severe impact.
+
+The spatial distribution of rent burden revealed further disparities. In Amsterdam-West, the burden is more evenly spread across neighborhoods, with many areas maintaining levels close to or below 30%, a threshold generally considered manageable. In Zuid, however, certain neighborhoods exhibited extremely high rent burdens, in some cases approaching or exceeding 40%. These findings point to serious affordability issues, even in districts traditionally viewed as wealthy.
+
+Further insights come from our sub-population analysis using neighborhood-level boxplots. This analysis revealed that the variation in rent burden is greater in Zuid than in West, indicating deeper internal inequalities. In Zuid, some neighborhoods experience low rent burdens, likely due to very high local incomes, while others face steep housing costs. In contrast, the range of rent burden values in West is narrower, pointing to a more balanced and stable situation for its residents.
+
+Our event analysis focused on the introduction of Airbnb regulations in 2018 and 2019. These policies, which limited the number of rental nights, were associated with a slight slowdown in the rising rent burden. However, this deceleration was not substantial enough to counteract the sharp increases that had already occurred. This suggests that while the regulations were a step in the right direction, they came too late to reverse the broader trend of declining affordability.
+
+Finally, the affordability pressure indicator further illustrates the depth of the crisis. In many neighborhoods, rent rose at a faster pace than income. This was especially evident in West, where income growth remained limited. In Zuid, income levels increased slightly more, but still failed to keep up with the high absolute rent costs. As a result, average- and low-income households across both districts are increasingly at risk of displacement, forced relocation and even homelessness, underscoring the urgent need for targeted housing policy interventions.
 
 # Part 5 - Reproducibility
 
