@@ -34,13 +34,18 @@ huur_long <- pivot_longer(huur_particulier,
                           names_to = "jaar", 
                           values_to = "huurprijs")
 huur_long$jaar <- as.numeric(huur_long$jaar)
+
 # Load income data for 2015
 inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 
 # Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
-# Merge income data with rent data by matching on both 'stadsdeel' (district) and 'jaar' (year)
+# Convert 'jaar' columns in both dataframes to character
+inkomen$jaar <- as.character(inkomen$jaar)
+huur_long$jaar <- as.character(huur_long$jaar)
+
+# Merge inkomen with huur_long by 'stadsdeel' and 'jaar'
 merged_df <- inkomen %>%
   left_join(huur_long, by = c("stadsdeel", "jaar"))
 
@@ -118,11 +123,11 @@ ggplot(data = map_data) +
 
 
 
-write_csv(avg_west, "data/avg_west.csv")
-write_csv(avg_zuid, "data/avg_zuid.csv")
-write_csv(combined_df, "data/combined_df.csv")
-write_csv(data_west, "data/data_west.csv")
-write_csv(data_zuid, "data/data_zuid.csv")
-write_csv(data_with_growth, "data_with_growtht.csv")
-write_csv(inkomen, "inkomen.csv")
-write_csv(merged_rent_burden, "merged_rent_burden.csv")
+#write_csv(avg_west, "data/avg_west.csv")
+#write_csv(avg_zuid, "data/avg_zuid.csv")
+#write_csv(combined_df, "data/combined_df.csv")
+#write_csv(data_west, "data/data_west.csv")
+#write_csv(data_zuid, "data/data_zuid.csv")
+#write_csv(data_with_growth, "data_with_growtht.csv")
+#write_csv(inkomen, "inkomen.csv")
+#write_csv(merged_rent_burden, "merged_rent_burden.csv")

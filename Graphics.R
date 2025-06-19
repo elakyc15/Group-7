@@ -162,7 +162,7 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   geom_point(size = 2) +
   
   # Set specific breaks on the x-axis (only the measured years)
-  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  scale_x_discrete(breaks = c(2015, 2017, 2019)) +
   
   # Add plot labels and title
   labs(
@@ -200,6 +200,7 @@ growth_data <- data_with_growth %>%
   select(stadsdeel, jaar, affordability_index)
 
 # Combine baseline with growth data and sort
+growth_data$jaar <- as.numeric(growth_data$jaar)
 plot_data <- bind_rows(base_2015, growth_data) %>%
   arrange(stadsdeel, jaar)
 

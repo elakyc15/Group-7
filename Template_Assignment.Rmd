@@ -8,6 +8,8 @@ output: pdf_document
 # Set-up your environment
 
 ```{r packages}
+
+install.packages("sf")
 require(tidyverse)
 require(dplyr)
 require(stringr)
@@ -519,6 +521,14 @@ inkomen_2015 <- read_csv("data/inkomen_2015.csv")
 # Combine income data across multiple years into a single dataframe
 inkomen <- bind_rows(inkomen_2015, inkomen_2017, inkomen_2019)
 
+# Convert 'jaar' columns in both dataframes to character
+inkomen$jaar <- as.character(inkomen$jaar)
+huur_long$jaar <- as.character(huur_long$jaar)
+
+# Merge inkomen with huur_long by 'stadsdeel' and 'jaar'
+merged_df <- inkomen %>%
+  left_join(huur_long, by = c("stadsdeel", "jaar"))
+
 ```
 
 ```{r merging_rent_burden, include=FALSE}
@@ -540,8 +550,6 @@ merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_
 Variable 1: Rent burden For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
 ```{r gen_var1_rent_burden_per_borough, include=FALSE}
-merged_df <- read_csv("merging_inkomen.R")
-
 # Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
 
@@ -596,7 +604,7 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   geom_point(size = 2) +
   
   # Set specific breaks on the x-axis (only the measured years)
-  scale_x_continuous(breaks = c(2015, 2017, 2019)) +
+  scale_x_discrete(breaks = c(2015, 2017, 2019)) +
   
   # Add plot labels and title
   labs(
@@ -787,6 +795,7 @@ growth_data <- data_with_growth %>%
   select(stadsdeel, jaar, affordability_index)
 
 # Combine baseline with growth data and sort
+growth_data$jaar <- as.numeric(growth_data$jaar)
 plot_data <- bind_rows(base_2015, growth_data) %>%
   arrange(stadsdeel, jaar)
 
