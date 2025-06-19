@@ -17,11 +17,18 @@ require(tidyverse)
 
 # Title Page
 
+<<<<<<< Updated upstream
 Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357, Daniëlle Goede, Jesper Kouw-2863970
 
 Tutorial 2, Group 7
 
 Chantal Schouwenaar
+=======
+Sara Hamming-2862636, Kayra Civil-2822767, Aysenur Erkılıç-2839646, Ela Köycü-286357, Daniëlle Goede-
+
+Tutorial 2, Group 7\
+Tutor: Chantal Schouwenaar
+>>>>>>> Stashed changes
 
 # Part 1 - Identify a Social Problem
 
@@ -40,6 +47,10 @@ This is a serious issue because everyone needs a safe and affordable place to li
 Most studies on Amsterdam’s rising only look at city-wide numbers and treat entire boroughs the same. This study focuses on the key 2017–2019 period when Airbnb really took off and new regulations were introduced, breaks the data down into small neighborhoods in West and South, and shows solid statistics to help shape fairer housing policies.
 
 # Part 2 - Data Sourcing
+
+```{r}
+
+```
 
 ## 2.1 Load in the data
 
@@ -82,7 +93,11 @@ Rent burden: Calculated as (average rent / average income) × 100%, this variabl
 
 Affordability pressure: Calculated as (rent increase % – income growth %). A positive value indicates that rent is growing faster than income, signaling worsening affordability.
 
+<<<<<<< Updated upstream
 The rent data file covers four specific years at the broader district level, showing how rents shifted over time in areas like West and Zuid. The CBS is a single year, look at who lives in each neighborhood and what they earn. By combining them, we can link the big rent trends to the real income and housing profiles of local residents.
+=======
+The rent data file covers four specific years at the broader district level, showing how rents shifted over time in areas like West and Zuid. The CBS is a single year, look at who lives in each neighbourhood and what they earn. By combining them, we can link the big rent trends to the real income and housing profiles of local residents.
+>>>>>>> Stashed changes
 
 The selected datasets provide a balanced combination of objective and subjective information, allowing for a nuanced analysis of both economic affordability and perceived housing conditions. Using Amsterdam-West and Amsterdam-Zuid as contrasting districts supports a clear comparison between relatively affordable and expensive housing areas.
 
@@ -92,7 +107,11 @@ While these data sources offer valuable insights, they also come with certain li
 
 ## 3.1 Data cleaning
 
+<<<<<<< Updated upstream
 For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighborhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
+=======
+For the CBS dataset, we created the income variables by selecting and combining all wijken in Amsterdam‐West and Zuid, then cleaned and converted the income field to numeric, handled missing values, and calculated average income per wijk for 2015, 2017, and 2019. In parallel, we loaded the rent data, removed unnecessary rows, kept only West and Zuid districts, renamed columns for clarity, selected private‐sector rent prices, recoded district names to match the CBS data, and standardized all column names. We then merged the two tables with a left join on neighbourhood and year this preserved every income observation even if a rent record was missing, ensuring no wijk was dropped due to incomplete rent data. In an ideal world, the rent dataset would cover all boroughs instead of just West and Zuid so it would match the income dataset’s full scope.
+>>>>>>> Stashed changes
 
 ```{r data cleaning huurprijzen, echo=FALSE}
 # Load required package
@@ -128,6 +147,7 @@ huur_long <- pivot_longer(huur_particulier,
                           values_to = "huurprijs")
 ```
 
+<<<<<<< Updated upstream
 ```{r data cleaning income 2015}
 # Load necessary libraries for data manipulation and string processing
 library(dplyr)
@@ -566,14 +586,24 @@ merged_rent_burden <- bind_rows(rent_burden_2015, rent_burden_2017, rent_burden_
   arrange(jaar)
 ```
 
+=======
+>>>>>>> Stashed changes
 ## 3.2 Generate necessary variables
 
 Variable 1: Rent burden\
 For the temporal analysis we used rent burden per borough. Therefore we used the averages we calculated.
 
+<<<<<<< Updated upstream
 ```{r gen_var1_rent burden per borough}
 # Convert average annual income (in thousands of euros) to monthly income in euros
 merged_df$gem_inkomen <- (merged_df$gem_inkomen * 1000) / 12
+=======
+Rent burden: Calculated as (average rent / average income) × 100%, this variable expresses the burden of rent in relation to income.
+
+We combined the variables of average rent and income, to look at the financial burden of housing cost on the income. We intend to use this for visualization charts spatial variation, sub-population variation and temporal variation.
+
+```{r gen_var1}
+>>>>>>> Stashed changes
 
 # Calculate rent burden as a percentage of monthly income
 merged_df$rent_burden <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
@@ -581,11 +611,19 @@ merged_df$rent_burden <- (merged_df$huurprijs / merged_df$gem_inkomen) * 100
 
 For the spatial analysis we uses rent burden per neighborhood. Therefore we calculated that one per neighborhood that belonged to each district.
 
+<<<<<<< Updated upstream
 ```{r gen_var1_rent burden per neighborhood}
 # Rent burden per neighborhood in 2019 for example (can also find in previous code)
 # Calculate average monthly income from annual income (in euros, originally in thousands)
 rent_burden_2019 <- rent_burden_2019 %>%
   mutate(gem_inkomen_per_maand = gem_inkomen * 1000 / 12)
+=======
+Affordability pressure: Calculated as (rent increase % – income growth %). A positive value indicates that rent is growing faster than income, signaling worsening affordability.
+
+For the affordability pressure we combined the percentage change of rent increase and the percentage change of income, to not only look at how the rent rose but if it out paces the income gains. We intend to use this for visualization charts event analysis.
+
+```{r gen_var2}
+>>>>>>> Stashed changes
 
 # Calculate rent burden as percentage of income
 rent_burden_2019 <- rent_burden_2019 %>%
@@ -643,6 +681,11 @@ ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   theme_minimal()
 ```
 
+<<<<<<< Updated upstream
+=======
+**Question:** How has rent burden evolved from 2017 to 2019 in West vs. Zuid?
+
+>>>>>>> Stashed changes
 We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two colored lines one for West and one for Zuid so you can see how rent burden evolved over **time** between 2017 and 2019. By placing time on the horizontal axis and clearly labeling each district, the chart directly aligns with our question about temporal variation in affordability stress, revealing exactly when and by how much Zuid’s rent burden outpaced West’s.
 
 ## 3.4 Visualize spatial variation
@@ -654,7 +697,13 @@ library(dplyr)
 library(ggplot2)
 library(viridis)
 
+<<<<<<< Updated upstream
 # --- Prepare 2017 Data ---
+=======
+**Question:** How does rent burden vary across neighbourhoods in Amsterdam West vs. Zuid?
+
+We’ll use the official Amsterdam neighbourhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighbourhoods that need the most support.
+>>>>>>> Stashed changes
 
 # Compute mean rent burden per neighborhood (wijk) for 2017
 mean_rent_map_2017 <- rent_burden_2017 %>%
@@ -740,6 +789,7 @@ ggplot(map_data_2019) +
   )
 ```
 
+<<<<<<< Updated upstream
 We’ll use the official Amsterdam neighborhood shapefile to draw West and Zuid at just the right scale zoomed in enough to show every wijk but not so far out that details get lost and shade each area by its rent-to-income ratio. A brief caption will explain that darker colours mark the highest rent burden, directly tying the map back to our question about where affordability stress is worst. By relying on accurate spatial data, appropriate zoom, and clear labels, the map will make it easy to spot the neighborhoods that need the most support.
 
 ## 3.5 Visualize sub-population variation
@@ -798,6 +848,11 @@ ggplot(rent_burden_clean, aes(x = reorder(wijk, Rent_burden), y = Rent_burden, f
 ```
 
 We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, grouping boxes by neighborhood and coloring them by borough (West vs Zuid), then facet the entire plot into two panels one for West, one for Zuid. This setup treats each borough as a sub-population, so you can directly compare how rent burden distributions (medians, IQRs, and upper tails) differ across neighborhoods and between boroughs. A concise caption will explain that taller boxes and longer upper whiskers signal where affordability stress is most severe, tying the visualization back to our question about which neighborhoods and which sub-populations carry the heaviest rent burden.
+=======
+**Question:** Which neighbourhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
+
+We’ll draw side-by-side box-plots of each wijk’s rent‐to‐income ratio, grouping boxes by neighbourhood and coloring them by borough (West vs Zuid), then facet the entire plot into two panels one for West, one for Zuid. This setup treats each borough as a sub-population, so you can directly compare how rent burden distributions (medians, IQRs, and upper tails) differ across neighbourhoods and between boroughs. A concise caption will explain that taller boxes and longer upper whiskers signal where affordability stress is most severe, tying the visualization back to our question about which neighbourhoods and which sub-populations carry the heaviest rent burden.
+>>>>>>> Stashed changes
 
 ## 3.6 Event analysis
 
@@ -870,7 +925,13 @@ ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel)) +
   )
 ```
 
+<<<<<<< Updated upstream
 We’ll plot a timeline of the year-over-year percent change in rent burden (y-axis) across survey years and mark the two key events mid-2018 and January 2019 Airbnb cap implementations with vertical lines and labels. By placing those events directly on the same chart as the percent-change values, we can see if the slope of the line flattens or dips immediately afterward. If the growth rate in rent burden noticeably slows following the caps, it suggests those regulations had a tangible impact on easing affordability pressure demonstrating how policy can shift housing-cost dynamics over time.
+=======
+**Question:** What happened to rent burden growth when Airbnb caps came in (2018 and 2019)?
+
+We’ll plot a timeline of the year-over-year percent change in rent quota (y-axis) across survey years and mark the two key events mid-2018 and January 2019 Airbnb cap implementations with vertical lines and labels. By placing those events directly on the same chart as the percent-change values, we can see if the slope of the line flattens or dips immediately afterward. If the growth rate in rent burden noticeably slows following the caps, it suggests those regulations had a tangible impact on easing affordability pressure demonstrating how policy can shift housing-cost dynamics over time.
+>>>>>>> Stashed changes
 
 # Part 4 - Discussion
 
