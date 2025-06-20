@@ -244,3 +244,30 @@ ggplot(plot_data, aes(x = jaar, y = affordability_index, color = stadsdeel)) +
     plot.title = element_text(face = "bold"),
     legend.position = "top"
   )
+
+
+# Load ggplot2 for plotting
+library(ggplot2)
+
+# Create a line plot showing rent burden over time for each district
+ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel, group = stadsdeel)) +
+  
+  # Add lines connecting rent burden values over time for each stadsdeel
+  geom_line(linewidth = 1.2) +
+  
+  # Add points to mark individual data values for better visibility
+  geom_point(size = 2) +
+  
+  # Set specific breaks on the x-axis to show only measured years
+  scale_x_discrete(breaks = c(2015, 2017, 2019)) +
+  
+  # Add title and axis labels
+  labs(
+    title = "Rent Burden in West and Zuid (2015–2019)",  # Plot title
+    x = "Year",                                           # X-axis label
+    y = "Rent Burden (%)",                                # Y-axis label
+    color = "Stadsdeel"                                   # Legend title
+  ) +
+  
+  # Apply a clean, minimalistic theme
+  theme_minimal()

@@ -7,7 +7,7 @@ output: pdf_document
 
 # Set-up your environment
 
-```{r packages}
+```{r packages, include=FALSE}
 
 install.packages("sf")
 require(tidyverse)
@@ -60,7 +60,13 @@ dataset_4<- read_csv("data/kerncijfers_wijken_en_buurten_2019.csv")
 head(dataset)
 ```
 
-The first data-set is an Excel sheet with the rent prices of every district of Amsterdam over the years 2013, 2015, 2017, 2019 both from particular and corporate. This is a credible source because the rent series comes directly from the City of Amsterdam’s official rental register. The second dataset is a csv file with all the neighborhoods of Amsterdam with all types of different variables, such as the population per neighborhood, types of houses, incomes and incomes of different groups, etc. This is a credible source because it comes from CBS, a well trusted source also CBS data is seen as a gold‐standard source for understanding economic and social trends in the Netherlands.
+The first data-set is an Excel sheet with the rent prices of every district of Amsterdam over the years 2013, 2015, 2017, 2019 both from particular and corporate. This is a credible source because the rent series comes directly from the City of Amsterdam’s official rental register.
+
+```{r}
+head(dataset_2)
+```
+
+The second dataset is a csv file with all the neighborhoods of Amsterdam with all types of different variables, such as the population per neighborhood, types of houses, incomes and incomes of different groups, etc. This is a credible source because it comes from CBS, a well trusted source also CBS data is seen as a gold‐standard source for understanding economic and social trends in the Netherlands.
 
 ## 2.3 Describe the type of variables included
 
@@ -595,7 +601,7 @@ For the affordability pressure we combined the percentage change of rent increas
 
 How has rent burden evolved from 2017 to 2019 in West vs. Zuid?
 
-```{r Multiline_plot_of_Rent_Burden_over_time_for_West_and_Zuid, include=FALSE}
+```{r Multiline_plot_of_Rent_Burden_over_time_for_West_and_Zuid, echo=FALSE}
 # Create a line plot showing the rent burden across years for each stadsdeel (district)
 ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
   
@@ -626,7 +632,7 @@ We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two
 
 How does rent burden vary across neighborhoods in Amsterdam West vs. Zuid?
 
-```{r Choropleth_Maps_Rent_Burden_by_wijk_2017, include=FALSE}
+```{r Choropleth_Maps_Rent_Burden_by_wijk_2017, echo=FALSE}
 amsterdam_map <- st_read("data/adam.geojson")
 amsterdam_map <- amsterdam_map %>%
   rename(wijk = wijknaam)
@@ -696,7 +702,7 @@ ggplot(map_data_2017) +
   )
 ```
 
-```{r Choropleth_Maps_Rent_Burden_by_wijk_2019, include=FALSE}
+```{r Choropleth_Maps_Rent_Burden_by_wijk_2019, echo=FALSE}
 # --- Plot: Average Rent Burden by wijk in 2019 ---
 
 ggplot(map_data_2019) +
@@ -725,7 +731,7 @@ We’ll use the official Amsterdam wijk shapefile to draw West and Zuid at just 
 
 Which neighborhoods carry the heaviest rent burden, and how does this differ in West vs. Zuid?
 
-```{r Boxplot_of_Rent_Burden_per_wijk_or_2017_and_2019, include=FALSE}
+```{r Boxplot_of_Rent_Burden_per_wijk_or_2017_and_2019, echo=FALSE}
 # Add year column to each dataset
 rent_burden_2017 <- rent_burden_2017 %>% mutate(jaar = 2017)
 rent_burden_2019 <- rent_burden_2019 %>% mutate(jaar = 2019)
@@ -778,7 +784,7 @@ We’ll draw side-by-side box-plots of each neighborhood’s rent‐to‐income 
 
 What happened to rent burden growth when Airbnb caps came in (2018 and 2019)?
 
-```{r Line_Plot_of_Affordability_Pressure_Index_with_Airbnb_Cap_Annotation, include=FALSE}
+```{r Line_Plot_of_Affordability_Pressure_Index_with_Airbnb_Cap_Annotation, echo=FALSE}
 # Create base values for 2015: index set to 100 for both stadsdelen
 base_2015 <- data.frame(
   stadsdeel = c("West", "Zuid"),
