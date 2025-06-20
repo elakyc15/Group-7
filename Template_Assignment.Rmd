@@ -47,7 +47,7 @@ Most studies on Amsterdam’s rising only look at city-wide numbers and treat en
 
 ## 2.1 Load in the data
 
-```{r loading_data}
+```{r loading_data, include=FALSE}
 dataset <- read_csv("data/huurprijzen.csv")
 dataset_2<- read_csv("data/kerncijfers_wijken_en_buurten_2015.csv")
 dataset_3<- read_csv("data/kerncijfers_wijken_en_buurten_2017.csv")
@@ -602,27 +602,27 @@ For the affordability pressure we combined the percentage change of rent increas
 How has rent burden evolved from 2017 to 2019 in West vs. Zuid?
 
 ```{r Multiline_plot_of_Rent_Burden_over_time_for_West_and_Zuid, echo=FALSE}
-# Create a line plot showing the rent burden across years for each stadsdeel (district)
-ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel)) +
+# Create a line plot showing rent burden over time for each district
+ggplot(data_with_growth, aes(x = jaar, y = rent_burden, color = stadsdeel, group = stadsdeel)) +
   
-  # Add lines to connect rent burden values over time for each district
+  # Add lines connecting rent burden values over time for each stadsdeel
   geom_line(linewidth = 1.2) +
   
-  # Add points at each data value for better visibility
+  # Add points to mark individual data values for better visibility
   geom_point(size = 2) +
   
-  # Set specific breaks on the x-axis (only the measured years)
+  # Set specific breaks on the x-axis to show only measured years
   scale_x_discrete(breaks = c(2015, 2017, 2019)) +
   
-  # Add plot labels and title
+  # Add title and axis labels
   labs(
-    title = "Rent Burden in West and Zuid (2015–2019)",  
-    x = "Year",                                           
-    y = "Rent Burden (%)",                                
-    color = "Stadsdeel"                                   
+    title = "Rent Burden in West and Zuid (2015–2019)",  # Plot title
+    x = "Year",                                           # X-axis label
+    y = "Rent Burden (%)",                                # Y-axis label
+    color = "Stadsdeel"                                   # Legend title
   ) +
   
-  # Apply a minimal theme for a clean appearance
+  # Apply a clean, minimalistic theme
   theme_minimal()
 ```
 
@@ -633,7 +633,7 @@ We’ll plot survey year on the x-axis and rent quota on the y-axis, drawing two
 How does rent burden vary across neighborhoods in Amsterdam West vs. Zuid?
 
 ```{r Choropleth_Maps_Rent_Burden_by_wijk_2017, echo=FALSE}
-amsterdam_map <- st_read("data/adam.geojson")
+amsterdam_map <- suppressMessages(st_read("data/adam.geojson"))
 amsterdam_map <- amsterdam_map %>%
   rename(wijk = wijknaam)
 amsterdam_map <- amsterdam_map %>%
@@ -682,24 +682,26 @@ breaks_seq <- seq(
 
 # --- Plot: Average Rent Burden by wijk in 2017 ---
 
-ggplot(map_data_2017) +
-  geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw wijks
-  scale_fill_viridis_c(   # apply perceptually uniform color scale
-    option = "magma",
-    na.value = "grey90",   # color for NA values
-    direction = -1,        # reverse scale direction
-    limits = combined_range,  # consistent scale across years
-    breaks = breaks_seq
-  ) +
-  labs(
-    title = "Average Rent Burden by wijk in Amsterdam (2017)",
-    fill = "Mean Rent Burden (%)"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(face = "bold", size = 16),
-    legend.position = "right"
-  )
+print(
+  ggplot(map_data_2017) +
+    geom_sf(aes(fill = mean_rent_burden), color = "white", size = 0.3) +  # draw wijks
+    scale_fill_viridis_c(   # apply perceptually uniform color scale
+      option = "magma",
+      na.value = "grey90",   # color for NA values
+      direction = -1,        # reverse scale direction
+      limits = combined_range,  # consistent scale across years
+      breaks = breaks_seq
+    ) +
+    labs(
+      title = "Average Rent Burden by wijk in Amsterdam (2017)",
+      fill = "Mean Rent Burden (%)"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(face = "bold", size = 16),
+      legend.position = "right"
+    )
+)
 ```
 
 ```{r Choropleth_Maps_Rent_Burden_by_wijk_2019, echo=FALSE}
